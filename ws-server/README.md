@@ -49,6 +49,9 @@ Response
 }
 ```
 
+{ "action_type": "bar", "data": "hey" }
+
+
 
 # 2) Move
 

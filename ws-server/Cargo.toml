@@ -13,3 +13,5 @@ serde = { version = "1.0", features = ["derive"]}
 serde_json = "1.0"
 futures = { version = "0.3", default-features=false}
 uuid = { version = "1.1.2", features = ["v4", "fast-rng", "macro-diagnostics"]}
+strum_macros = "0.26.4"
+strum = "0.26.3"
