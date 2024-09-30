@@ -180,25 +180,7 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                                         // Tell all players you quacked
                                         // match res {
 
-                                     
-
                                         println!("mapping over clients");
-
-                                        // Iterate over all clients and send the message
-                                        for (_, tx) in locked.iter() {
-                                            // let _ = tx.send(Ok(msg.clone()));
-                                            let msg = Message::text("foo".to_string());
-
-                                            let _ = tx.sender;
-
-                                            if let Some(foo) = &tx.sender {
-
-                                                // if 
-                                                let _ = foo.send(Ok(msg));
-                                            }
-                                        }
-
-
 
                                         match sender.send(Ok(Message::text(
                                             format!("you quacked {}", client_id).to_string(),
@@ -209,6 +191,20 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                                             Err(err) => println!("Failed to response quack"),
                                         }
 
+                                        // Iterate over all clients and send the message
+                                        for (_, tx) in locked.iter() {
+                                            // let _ = tx.send(Ok(msg.clone()));
+                                            let msg = Message::text("foo".to_string());
+
+                                            let _ = tx.sender;
+
+                                            if let Some(current_sender) = &tx.sender {
+                                                // only send it to OTHER connections, not initiator of quack action message
+                                                if &tx.client_id != client_id {
+                                                    let _ = current_sender.send(Ok(msg));
+                                                }
+                                            }
+                                        }
                                     } // let _ = clients.lock().map(|client| {
                                       //     println!("client: {:?}", client);
 
