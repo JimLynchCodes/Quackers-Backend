@@ -23,6 +23,9 @@ enum GameActionType {
         x_direction: usize,
         y_direction: usize,
     },
+
+    #[strum(serialize = "quack", serialize = "q")]
+    Quack,
     // We can match on multiple different patterns.
     // #[strum(serialize = "blue", serialize = "b")]
     // Move(usize),
@@ -144,29 +147,95 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                         println!("got action of type: {}", v.action_type);
 
                         match GameActionType::from_str(&v.action_type) {
-                            Ok(action_type) => match action_type {
-                                GameActionType::Red => {
-                                    println!("handling action type: Red!");
-                                }
-                                GameActionType::PlayerMove {
-                                    x_direction,
-                                    y_direction,
-                                } => {
-                                    println!("handling player moving action type!");
-
-                                    let rm = ResponseMove {
-                                        action_type: "response_stuff".to_string(),
-                                        data: "yerrr".to_string(),
-                                    };
-
-                                    let res = serde_json::ser::to_string(&rm);
-
-                                    match res {
-                                        Ok(string_response) => { sender.send(Ok(Message::text(string_response))).unwrap() },
-                                        _ => { println!("Couldn't convert ResponseMove struct to a string") }
+                            Ok(action_type) => {
+                                match action_type {
+                                    GameActionType::Red => {
+                                        println!("handling action type: Red!");
                                     }
+                                    GameActionType::PlayerMove {
+                                        x_direction,
+                                        y_direction,
+                                    } => {
+                                        println!("handling player moving action type!");
+
+                                        let rm = ResponseMove {
+                                            action_type: "response_stuff".to_string(),
+                                            data: "yerrr".to_string(),
+                                        };
+
+                                        let res = serde_json::ser::to_string(&rm);
+
+                                        match res {
+                                            Ok(string_response) => sender
+                                                .send(Ok(Message::text(string_response)))
+                                                .unwrap(),
+                                            _ => {
+                                                println!("Couldn't convert ResponseMove struct to a string")
+                                            }
+                                        }
+                                    }
+                                    GameActionType::Quack => {
+                                        println!("handling quack action type for {:?}!", client_id);
+
+                                        // Tell all players you quacked
+                                        // match res {
+
+                                     
+
+                                        println!("mapping over clients");
+
+                                        // Iterate over all clients and send the message
+                                        for (_, tx) in locked.iter() {
+                                            // let _ = tx.send(Ok(msg.clone()));
+                                            let msg = Message::text("foo".to_string());
+
+                                            let _ = tx.sender;
+
+                                            if let Some(foo) = &tx.sender {
+
+                                                // if 
+                                                let _ = foo.send(Ok(msg));
+                                            }
+                                        }
+
+
+
+                                        match sender.send(Ok(Message::text(
+                                            format!("you quacked {}", client_id).to_string(),
+                                        ))) {
+                                            Ok(s) => {
+                                                println!("Sent quack response")
+                                            }
+                                            Err(err) => println!("Failed to response quack"),
+                                        }
+
+                                    } // let _ = clients.lock().map(|client| {
+                                      //     println!("client: {:?}", client);
+
+                                      // });
+
+                                      // for (_, tx) in clients.lock().unwrap().iter() {
+                                      //     let _ = tx.send(Ok(msg.clone()));
+                                      // }
+
+                                      // Locking the clients map asynchronously
+                                      // let clients_guard = clients.lock().await;
+
+                                      // println!("length: {:?}", clients_guard.iter().count());
+
+                                      // // Iterate over all clients and send the message
+
+                                      // for (something, client) in clients_guard.iter() {
+
+                                      //     println!("mapping over client something: {:?}", something);
+                                      //     println!("mapping over client client: {:?}", client);
+
+                                      //     // Assuming `client` has a sender that can send messages
+                                      //     if let Some(sender) = &client.sender {
+                                      //         let _  = sender.send(Ok(Message::text(format!("hey this duck over here quacked! {:?}", "foo").to_string())));
+                                      //     }
                                 }
-                            },
+                            }
                             Err(err) => println!(
                                 "Couldn't convert incoming action_type to enum: {}, err: {:?}",
                                 v.action_type, err
