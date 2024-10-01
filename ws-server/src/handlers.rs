@@ -1,4 +1,4 @@
-use crate::{ws, Clients, Result};
+use crate::{ws, Clients, Cracker, Result};
 use warp::Reply;
 
 pub async fn ws_handler(ws: warp::ws::Ws, clients: Clients, cracker: Cracker) -> Result<impl Reply> {

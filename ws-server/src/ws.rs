@@ -135,17 +135,24 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients, cracker: &
                                             // if let Some(cracker) = cracker_lock. {
                                             //     // check if duck is close to crackers
                                             //     // good old pythagorean theorem!
-                                            let distance: f64 = ((client.x_pos - cracker.x_pos)
-                                                .pow(2)
-                                                + (client.y_pos - crackers.y_pos).pow(2))
-                                            .sqrt();
 
-                                            if distance < (client.radius + crackers.radius) {
+                                            let cracker_lock = cracker.lock().await;
+
+                                            let x_squared: f64 = (client.x_pos - cracker_lock.x_pos)
+                                            .pow(2) as f64;
+                                            let y_squared: f64 = (client.y_pos - cracker_lock.y_pos)
+                                            .pow(2) as f64;
+
+                                            let distance: f64 = (x_squared + y_squared).sqrt();
+                                            //     + (client.y_pos - cracker_lock.y_pos).pow(2)).try_into()
+                                            
+                                            
+                                            if distance < ((client.radius + cracker_lock.radius) as f64) {
                                                 let cracker_lock = cracker.lock().await;
 
                                                 client.cracker_count += cracker_lock.points;
 
-                                                // TODO create a new 
+                                                // TODO create a new cracker
 
                                                 // award player!
 
