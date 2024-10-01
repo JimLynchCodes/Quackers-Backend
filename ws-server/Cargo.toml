@@ -15,3 +15,4 @@ futures = { version = "0.3", default-features=false}
 uuid = { version = "1.1.2", features = ["v4", "fast-rng", "macro-diagnostics"]}
 strum_macros = "0.26.4"
 strum = "0.26.3"
+rand = "0.8.5"

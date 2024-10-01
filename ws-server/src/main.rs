@@ -1,32 +1,10 @@
 use std::{collections::HashMap, convert::Infallible, sync::Arc};
-use tokio::sync::{mpsc, Mutex};
-use warp::{ws::Message, Filter, Rejection};
+use quackers_game_logic::{cracker_creator::generate_random_cracker_data, types::game_state::{Client, CrackerData}};
+use tokio::sync::Mutex;
+use warp::{Filter, Rejection};
 
 mod handlers;
-mod ws;
-
-#[derive(Debug, Clone)]
-pub struct Client {
-    pub client_id: String,
-    pub sender: Option<mpsc::UnboundedSender<std::result::Result<Message, warp::Error>>>,
-
-    pub x_pos: u64,
-    pub y_pos: u64,
-    pub radius: u64,
-
-    pub friendly_name: String,
-    pub color: String,
-    pub quack_pitch: f64,
-
-    pub cracker_count: u64,
-}
-
-pub struct CrackerData {
-    points: u64,
-    x_pos: u64,
-    y_pos: u64,
-    radius: u64,
-}
+mod quackers_game_logic;
 
 type Clients = Arc<Mutex<HashMap<String, Client>>>;
 type Cracker = Arc<Mutex<CrackerData>>;
@@ -36,12 +14,8 @@ type Result<T> = std::result::Result<T, Rejection>;
 #[tokio::main]
 async fn main() {
     let clients: Clients = Arc::new(Mutex::new(HashMap::new()));
-    let cracker: Cracker = Arc::new(Mutex::new(CrackerData {
-        points: 10,
-        x_pos: 1,
-        y_pos: 1,
-        radius: 2,
-    }));
+
+    let cracker: Cracker = Arc::new(Mutex::new(generate_random_cracker_data()));
 
     println!("Configuring websocket route");
     let ws_route = warp::path("ws")
