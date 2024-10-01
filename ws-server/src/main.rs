@@ -9,6 +9,15 @@ mod ws;
 pub struct Client {
     pub client_id: String,
     pub sender: Option<mpsc::UnboundedSender<std::result::Result<Message, warp::Error>>>,
+
+    pub friendly_name: String,
+    pub x_pos: u64,
+    pub y_pos: u64,
+    
+    pub color: String,
+    pub quack_pitch: f64,
+    
+    pub cracker_count: u64
 }
 
 type Clients = Arc<Mutex<HashMap<String, Client>>>;

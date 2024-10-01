@@ -7,12 +7,22 @@ use tokio_stream::wrappers::UnboundedReceiverStream;
 use uuid::Uuid;
 use warp::ws::{Message, WebSocket};
 
-use std::str::FromStr;
+use std::convert::TryInto;
+use std::{
+    collections::HashMap,
+    str::FromStr,
+    sync::{Arc, Mutex},
+};
 use strum_macros::EnumString;
 
 const ACTION_TYPE_MOVE: &str = "player_move";
 const ACTION_TYPE_QUACK: &str = "quack";
 const ACTION_TYPE_INTERACT: &str = "interact";
+
+const X_DEFAULT_START_POSTION: u64 = 10;
+const Y_DEFAULT_START_POSTION: u64 = 10;
+
+// client_id -> playergameData
 
 #[derive(Debug, PartialEq, EnumString)]
 enum GameActionType {
@@ -58,6 +68,13 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
     let new_client = Client {
         client_id: uuid.clone(),
         sender: Some(client_sender),
+
+        friendly_name: "[NO_NAME]".to_string(),
+        color: "red".to_string(),
+        quack_pitch: 1.0,
+        x_pos: X_DEFAULT_START_POSTION,
+        y_pos: Y_DEFAULT_START_POSTION,
+        cracker_count: 0,
     };
 
     clients.lock().await.insert(uuid.clone(), new_client);
@@ -156,7 +173,24 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
                                         x_direction,
                                         y_direction,
                                     } => {
-                                        println!("handling player moving action type!");
+                                        let mut clients_lock = clients.lock().await;
+                                        if let Some(client) = clients_lock.get_mut(client_id) {
+                                            let x_pos_int: u64 = x_direction
+                                                .try_into()
+                                                .expect("Converting x_pos failed");
+                                            let y_pos_int: u64 = y_direction
+                                                .try_into()
+                                                .expect("Converting y_pos failed");
+
+                                            client.x_pos += x_pos_int;
+                                            client.y_pos += y_pos_int;
+
+                                            // TODO - check if duck is close to crackers
+
+                                            // TODO
+                                            // messsage errbody the good lord's news. wait, wut 
+
+                                        }
 
                                         let rm = ResponseMove {
                                             action_type: "response_stuff".to_string(),
