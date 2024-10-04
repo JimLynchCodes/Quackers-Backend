@@ -1,7 +1,9 @@
-use crate::quackers_game_logic::client_msg_handler::client_msg;
-use crate::quackers_game_logic::types::defaults::{PLAYER_X_DEFAULT_START_POSTION, PLAYER_Y_DEFAULT_START_POSTION};
-use crate::quackers_game_logic::types::game_state::Client;
-use crate::{Clients, Cracker};
+use crate::quackers_game::client_msg_handler::client_msg;
+use crate::quackers_game::types::defaults::{
+    PLAYER_X_DEFAULT_START_POSTION, PLAYER_Y_DEFAULT_START_POSTION,
+};
+use crate::quackers_game::types::game_state::{ClientConnection, ClientGameData};
+use crate::{ClientConnections, ClientsGameData, Cracker};
 
 use futures::{FutureExt, StreamExt};
 use serde::{Deserialize, Serialize};
@@ -18,7 +20,12 @@ use std::{
 };
 use strum_macros::EnumString;
 
-pub async fn client_connection(ws: WebSocket, clients: Clients, cracker: Cracker) {
+pub async fn client_connection(
+    ws: WebSocket,
+    client_connections: ClientConnections,
+    clients_game_data: ClientsGameData,
+    cracker: Cracker,
+) {
     println!("establishing client connection... {:?}", ws);
 
     let (client_ws_sender, mut client_ws_rcv) = ws.split();
@@ -34,10 +41,19 @@ pub async fn client_connection(ws: WebSocket, clients: Clients, cracker: Cracker
 
     let uuid = Uuid::new_v4().simple().to_string();
 
-    let new_client = Client {
+    let new_client_connection = ClientConnection {
         client_id: uuid.clone(),
         sender: Some(client_sender),
+    };
 
+    client_connections
+        .lock()
+        .await
+        .insert(uuid.clone(), new_client_connection);
+
+    let new_client_game_data = ClientGameData {
+        // sender: Some(client_sender),
+        client_id: uuid.clone(),
         friendly_name: "[NO_NAME]".to_string(),
         color: "red".to_string(),
         quack_pitch: 1.0,
@@ -47,7 +63,10 @@ pub async fn client_connection(ws: WebSocket, clients: Clients, cracker: Cracker
         cracker_count: 0,
     };
 
-    clients.lock().await.insert(uuid.clone(), new_client);
+    clients_game_data
+        .lock()
+        .await
+        .insert(uuid.clone(), new_client_game_data);
 
     while let Some(result) = client_ws_rcv.next().await {
         let msg = match result {
@@ -57,9 +76,16 @@ pub async fn client_connection(ws: WebSocket, clients: Clients, cracker: Cracker
                 break;
             }
         };
-        client_msg(&uuid, msg, &clients, &cracker).await;
+        client_msg(
+            &uuid,
+            msg,
+            &client_connections,
+            &clients_game_data,
+            &cracker,
+        )
+        .await;
     }
 
-    clients.lock().await.remove(&uuid);
+    client_connections.lock().await.remove(&uuid);
     println!("{} disconnected", uuid);
 }

@@ -2,10 +2,14 @@ use tokio::sync::mpsc;
 use warp::filters::ws::Message;
 
 #[derive(Debug, Clone)]
-pub struct Client {
-    pub client_id: String,
+pub struct ClientConnection {
+    pub client_id: String, // used as the key in has map
     pub sender: Option<mpsc::UnboundedSender<std::result::Result<Message, warp::Error>>>,
+}
 
+#[derive(Debug, Clone)]
+pub struct ClientGameData {
+    pub client_id: String, // used as the key in has map
     pub x_pos: u64,
     pub y_pos: u64,
     pub radius: u64,

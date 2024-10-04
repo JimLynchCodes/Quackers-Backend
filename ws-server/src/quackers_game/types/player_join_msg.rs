@@ -1,15 +1,15 @@
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use super::msg::OutgoingGameActionType;
 
+// Player sends a "friendly name" and then other players can see
+
 #[derive(Debug, Deserialize)]
-pub struct MoveRequestData {
-    pub x_direction: u64,
-    pub y_direction: u64,
+pub struct JoinRequestData {
+    pub friendly_name: String,
 }
 
 #[derive(Debug, Serialize)]
-pub struct SomeoneMovedData {
+pub struct NewJoinerData {
     pub player_uuid: String,
     pub player_friendly_name: String,
     pub color: String,
@@ -20,9 +20,15 @@ pub struct SomeoneMovedData {
 }
 
 #[derive(Debug, Serialize)]
-pub struct SomeoneMovedMsg {
+pub struct YouJoinedMsg {
     pub action_type: OutgoingGameActionType,
-    pub data: SomeoneMovedData,
+    pub data: NewJoinerData,
+}
+
+#[derive(Debug, Serialize)]
+pub struct OtherPlayerJoinedMsg {
+    pub action_type: OutgoingGameActionType,
+    pub data: NewJoinerData,
 }
 
 

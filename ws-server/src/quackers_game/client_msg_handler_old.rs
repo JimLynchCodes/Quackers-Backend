@@ -36,6 +36,7 @@ pub async fn client_msg(client_id: &str, msg: Message, clients: &Clients, cracke
     };
 
     let clients_lock = clients.lock().await;
+    
     match clients_lock.get(client_id) {
         Some(request_originator_client) => {
             if let Some(sender) = &request_originator_client.sender {
