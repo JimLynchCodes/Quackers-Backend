@@ -13,10 +13,8 @@ pub struct NewJoinerData {
     pub player_uuid: String,
     pub player_friendly_name: String,
     pub color: String,
-    pub old_x_position: u64,
-    pub old_y_position: u64,
-    pub new_x_position: u64,
-    pub new_y_position: u64,
+    pub x_position: u64,
+    pub y_position: u64,
 }
 
 #[derive(Debug, Serialize)]
