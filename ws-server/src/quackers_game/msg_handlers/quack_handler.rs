@@ -1,15 +1,21 @@
 use warp::filters::ws::Message;
 
-use crate::{quackers_game::types::{game_state::ClientGameData, msg::OutgoingGameActionType, quack_msg::{QuackResponseData, YouQuackedMsg}}, ClientConnections, ClientsGameData};
+use crate::{
+    quackers_game::types::{
+        game_state::ClientGameData,
+        msg::OutgoingGameActionType,
+        quack_msg::{QuackResponseData, YouQuackedMsg},
+    },
+    ClientConnections, ClientsGameData,
+};
 
 pub async fn handle_quack_action(
     sender_client_id: &str,
     client_connections_arc_mutex: &ClientConnections,
     clients_game_data_arc_mutex: &ClientsGameData,
 ) {
-
     // No need to unpack the request data
-    
+
     // Send quack message to connected clients
     for (_, tx) in client_connections_arc_mutex.lock().await.iter() {
         if &tx.client_id == sender_client_id {

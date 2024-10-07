@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use super::msg::OutgoingGameActionType;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
 pub struct MoveRequestData {
@@ -29,6 +29,3 @@ pub struct OtherMovedMsg {
     pub action_type: OutgoingGameActionType,
     pub data: MoveResponseData,
 }
-
-
-

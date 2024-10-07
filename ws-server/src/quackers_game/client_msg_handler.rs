@@ -38,20 +38,23 @@ pub async fn client_msg(
     cracker: &Cracker,
 ) {
     println!("received message from {}: {:?}", client_id, msg);
-    
+
     let json_message: GenericIncomingRequest = unpack_message(msg);
-    
+
     let action_type = get_action_type_from_message(&json_message);
-    
+
     println!("action_type is {:?}", action_type);
 
     match action_type {
-        IncomingGameActionType::Join => handle_submit_name_action(
-            client_id,
-            json_message.clone(),
-            &client_connections_arc_mutex,
-            &client_data_arc_mutex,
-        ).await,
+        IncomingGameActionType::Join => {
+            handle_submit_name_action(
+                client_id,
+                json_message.clone(),
+                &client_connections_arc_mutex,
+                &client_data_arc_mutex,
+            )
+            .await
+        }
         IncomingGameActionType::Quack => {
             handle_quack_action(
                 client_id,
@@ -60,7 +63,16 @@ pub async fn client_msg(
             )
             .await;
         }
-        IncomingGameActionType::Move => handle_move_action(client_id, client_connections_arc_mutex, client_data_arc_mutex, cracker).await,
+        IncomingGameActionType::Move => {
+            handle_move_action(
+                client_id,
+                json_message.clone(),
+                client_connections_arc_mutex,
+                client_data_arc_mutex,
+                cracker,
+            )
+            .await
+        }
         IncomingGameActionType::Interact => (),
         IncomingGameActionType::Empty => (),
     }
