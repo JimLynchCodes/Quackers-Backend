@@ -3,8 +3,8 @@ use serde_json::Value;
 
 use super::msg::OutgoingGameActionType;
 
-#[derive(Debug, Serialize)]
-pub struct GotCrackersResponseData {
+#[derive(Debug, Serialize, Clone)]
+pub struct GotCrackerResponseData {
     pub player_uuid: String,
     pub player_friendly_name: String,
     pub old_cracker_x_position: u64,
@@ -16,13 +16,13 @@ pub struct GotCrackersResponseData {
 }
 
 #[derive(Debug, Serialize)]
-pub struct YouGotCrackersMsg {
+pub struct YouGotCrackerMsg {
     pub action_type: OutgoingGameActionType,
-    pub data: GotCrackersResponseData,
+    pub data: GotCrackerResponseData,
 }
 
 #[derive(Debug, Serialize)]
 pub struct OtherPlayerGotCrackersMsg {
     pub action_type: OutgoingGameActionType,
-    pub data: GotCrackersResponseData,
+    pub data: GotCrackerResponseData,
 }

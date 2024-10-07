@@ -7,6 +7,10 @@ pub async fn handle_quack_action(
     client_connections_arc_mutex: &ClientConnections,
     clients_game_data_arc_mutex: &ClientsGameData,
 ) {
+
+    // No need to unpack the request data
+    
+    // Send quack message to connected clients
     for (_, tx) in client_connections_arc_mutex.lock().await.iter() {
         if &tx.client_id == sender_client_id {
             let you_quacked_msg =
@@ -32,8 +36,7 @@ pub async fn handle_quack_action(
 
 async fn build_you_quacked_msg(
     quacker_client_id: &str,
-    // quackerClient: &ClientConnection,
-    quackerClientsGameData: &ClientsGameData,
+    quacker_clients_game_data: &ClientsGameData,
 ) -> Message {
     let default_game_data = ClientGameData {
         client_id: "error".to_string(),
@@ -46,7 +49,7 @@ async fn build_you_quacked_msg(
         cracker_count: 0,
     };
 
-    let gaurd = quackerClientsGameData.lock().await;
+    let gaurd = quacker_clients_game_data.lock().await;
 
     let sender_game_data = gaurd.get(quacker_client_id).unwrap_or_else(|| {
         println!("Couldn't find client with id: {}", quacker_client_id);
@@ -75,8 +78,7 @@ async fn build_you_quacked_msg(
 
 async fn build_other_player_quacked_msg(
     quacker_client_id: &str,
-    // quackerClient: &ClientConnection,
-    quackerClientsGameData: &ClientsGameData,
+    quacker_clients_game_data: &ClientsGameData,
 ) -> Message {
     let default_game_data = ClientGameData {
         client_id: "error".to_string(),
@@ -89,7 +91,7 @@ async fn build_other_player_quacked_msg(
         cracker_count: 0,
     };
 
-    let gaurd = quackerClientsGameData.lock().await;
+    let gaurd = quacker_clients_game_data.lock().await;
 
     let sender_game_data = gaurd.get(quacker_client_id).unwrap_or_else(|| {
         println!("Couldn't find client with id: {}", quacker_client_id);

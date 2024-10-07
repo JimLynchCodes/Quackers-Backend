@@ -5,7 +5,7 @@ use crate::{
         game_state::ClientGameData,
         msg::{GenericIncomingRequest, OutgoingGameActionType},
         player_join_msg::{JoinRequestData, NewJoinerData, YouJoinedMsg},
-        quack_msg::{OtherQuackedMsg, QuackResponseData, YouQuackedMsg},
+        quack_msg::{OtherQuackedMsg, QuackResponseData},
     },
     ClientConnections, ClientsGameData,
 };
@@ -16,6 +16,7 @@ pub async fn handle_submit_name_action(
     client_connections_arc_mutex: &ClientConnections,
     clients_game_data_arc_mutex: &ClientsGameData,
 ) {
+    // Unpack the request
     let submit_action_request_data: JoinRequestData = serde_json::from_value(json_message.data)
         .unwrap_or_else(|err| {
             println!("Couldn't convert data to JoinRequestData struct");
@@ -24,15 +25,20 @@ pub async fn handle_submit_name_action(
             }
         });
 
+    // Update friendly name for the correct player
     if let Some(mutable_game_data_gaurd) = clients_game_data_arc_mutex
         .lock()
         .await
         .get_mut(sender_client_id)
     {
-        println!("mutatng..");
+        println!(
+            "mutating user with id: {}, new friendly_name: {}..",
+            sender_client_id, submit_action_request_data.friendly_name
+        );
         mutable_game_data_gaurd.friendly_name = submit_action_request_data.friendly_name;
     };
 
+    // Tell everyone about new user join
     for (_, tx) in client_connections_arc_mutex.lock().await.iter() {
         if &tx.client_id == sender_client_id {
             let you_joined_msg =

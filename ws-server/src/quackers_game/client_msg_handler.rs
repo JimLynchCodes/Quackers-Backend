@@ -1,4 +1,5 @@
 use crate::quackers_game::cracker_creator::generate_random_cracker_data;
+use crate::quackers_game::msg_handlers::move_handler::handle_move_action;
 use crate::quackers_game::msg_handlers::quack_handler::handle_quack_action;
 use crate::quackers_game::msg_handlers::submit_name_handler::handle_submit_name_action;
 use crate::quackers_game::types::defaults::{MAX_X_POS, MAX_Y_POS, MIN_X_POS, MIN_Y_POS};
@@ -59,7 +60,8 @@ pub async fn client_msg(
             )
             .await;
         }
-        IncomingGameActionType::Move => handle_move_action(),
+        IncomingGameActionType::Move => handle_move_action(client_id, client_connections_arc_mutex, client_data_arc_mutex, cracker).await,
+        IncomingGameActionType::Interact => (),
         IncomingGameActionType::Empty => (),
     }
 }
@@ -72,8 +74,6 @@ pub async fn client_msg(
 // ) {
 //     let incoming_data_json: Result<MoveRequestData, _> = serde_json::from_value(json_message.data);
 // }
-
-fn handle_move_action() {}
 
 fn get_action_type_from_message(json_message: &GenericIncomingRequest) -> IncomingGameActionType {
     IncomingGameActionType::from_str(&json_message.action_type).unwrap_or_else(|err| {

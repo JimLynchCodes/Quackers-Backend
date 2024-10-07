@@ -7,7 +7,7 @@ pub struct MoveRequestData {
     pub y_direction: u64,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 pub struct MoveResponseData {
     pub player_uuid: String,
     pub player_friendly_name: String,

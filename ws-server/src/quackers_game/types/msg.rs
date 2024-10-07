@@ -19,6 +19,9 @@ pub enum IncomingGameActionType {
     #[strum(serialize = "move", serialize = "m")]
     Move,
 
+    #[strum(serialize = "interact", serialize = "i")]
+    Interact,
+
     #[strum(serialize = "empty", serialize = "e")]
     Empty, // used as a default in order to ignore invalid inputs without panicing
 }
@@ -44,4 +47,9 @@ pub enum OutgoingGameActionType {
     YouGotCrackers,
     #[strum(serialize = "other_player_got_crackers", serialize = "opgc")]
     OtherPlayerGotCrackers,
+
+    #[strum(serialize = "you_died", serialize = "yd")]
+    YouGotDied,
+    #[strum(serialize = "other_player_died", serialize = "opd")]
+    OtherPlayerGotDied,
 }
