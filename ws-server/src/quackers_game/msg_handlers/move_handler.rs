@@ -22,13 +22,14 @@ pub async fn handle_move_action(
     clients_game_data_arc_mutex: &ClientsGameData,
     cracker: &Cracker,
 ) {
+    println!("Move request: {:?}", &json_message.data);
     // Unpack the request
     let move_request_data: MoveRequestData = serde_json::from_value(json_message.data)
         .unwrap_or_else(|err| {
-            println!("Couldn't convert data to JoinRequestData struct");
+            println!("Couldn't convert data to MoveRequestData struct: {:?}", err);
             MoveRequestData {
-                x_direction: 0,
-                y_direction: 0,
+                x_direction: 0.,
+                y_direction: 0.,
             }
         });
 
@@ -102,8 +103,8 @@ async fn check_if_player_touched_crackers(
 
     let mut default_game_data = ClientGameData {
         client_id: "error".to_string(),
-        x_pos: 0,
-        y_pos: 0,
+        x_pos: 0.,
+        y_pos: 0.,
         radius: 0,
         friendly_name: "error".to_string(),
         color: "error".to_string(),
@@ -119,13 +120,13 @@ async fn check_if_player_touched_crackers(
 
     // check if duck is close to crackers
     // good old pythagorean theorem!
-    let x_squared: f64 = (&client.x_pos - cracker_lock.x_pos).pow(2) as f64;
-    let y_squared: f64 = (client.y_pos - cracker_lock.y_pos).pow(2) as f64;
+    let x_squared: f32 = (&client.x_pos - cracker_lock.x_pos).powf(2.) as f32;
+    let y_squared: f32 = (client.y_pos - cracker_lock.y_pos).powf(2.) as f32;
 
-    let distance: f64 = (x_squared + y_squared).sqrt();
+    let distance: f32 = (x_squared + y_squared).sqrt();
 
     // got crackers!
-    if distance < ((client.radius + cracker_lock.radius) as f64) {
+    if distance < ((client.radius + cracker_lock.radius) as f32) {
         println!("User {:?} getting crackers!", client.friendly_name);
 
         let old_cracker_points = cracker_lock.points.clone();
@@ -268,8 +269,8 @@ async fn build_other_player_quacked_msg(
 ) -> Message {
     let default_game_data = ClientGameData {
         client_id: "error".to_string(),
-        x_pos: 0,
-        y_pos: 0,
+        x_pos: 0.,
+        y_pos: 0.,
         radius: 0,
         friendly_name: "error".to_string(),
         color: "error".to_string(),

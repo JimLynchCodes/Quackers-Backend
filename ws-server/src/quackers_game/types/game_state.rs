@@ -10,20 +10,20 @@ pub struct ClientConnection {
 #[derive(Debug, Clone)]
 pub struct ClientGameData {
     pub client_id: String, // used as the key in has map
-    pub x_pos: u64,
-    pub y_pos: u64,
+    pub x_pos: f32,
+    pub y_pos: f32,
     pub radius: u64,
 
     pub friendly_name: String,
     pub color: String,
-    pub quack_pitch: f64,
+    pub quack_pitch: f32,
 
     pub cracker_count: u64,
 }
 
 pub struct CrackerData {
     pub points: u64,
-    pub x_pos: u64,
-    pub y_pos: u64,
+    pub x_pos: f32,
+    pub y_pos: f32,
     pub radius: u64,
 }

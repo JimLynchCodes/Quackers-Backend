@@ -9,9 +9,9 @@ pub struct QuackRequestData {}
 pub struct QuackResponseData {
     pub player_uuid: String,
     pub player_friendly_name: String,
-    pub player_x_position: u64,
-    pub player_y_position: u64,
-    pub quack_pitch: f64,
+    pub player_x_position: f32,
+    pub player_y_position: f32,
+    pub quack_pitch: f32,
 }
 
 #[derive(Debug, Serialize)]

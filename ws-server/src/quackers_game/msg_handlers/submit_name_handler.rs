@@ -67,8 +67,8 @@ async fn build_you_joined_msg(
 ) -> Message {
     let default_game_data = ClientGameData {
         client_id: "error".to_string(),
-        x_pos: 0,
-        y_pos: 0,
+        x_pos: 0.,
+        y_pos: 0.,
         radius: 0,
         friendly_name: "error".to_string(),
         color: "error".to_string(),
@@ -108,8 +108,8 @@ async fn build_other_player_joined_msg(
 ) -> Message {
     let default_game_data = ClientGameData {
         client_id: "error".to_string(),
-        x_pos: 0,
-        y_pos: 0,
+        x_pos: 0.,
+        y_pos: 0.,
         radius: 0,
         friendly_name: "error".to_string(),
         color: "error".to_string(),

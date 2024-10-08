@@ -87,16 +87,16 @@ pub async fn client_msg(client_id: &str, msg: Message, clients: &Clients, cracke
 
                                             let mut cracker_lock = cracker.lock().await;
 
-                                            let x_squared: f64 =
-                                                (client.x_pos - cracker_lock.x_pos).pow(2) as f64;
-                                            let y_squared: f64 =
-                                                (client.y_pos - cracker_lock.y_pos).pow(2) as f64;
+                                            let x_squared: f32 =
+                                                (client.x_pos - cracker_lock.x_pos).pow(2) as f32;
+                                            let y_squared: f32 =
+                                                (client.y_pos - cracker_lock.y_pos).pow(2) as f32;
 
-                                            let distance: f64 = (x_squared + y_squared).sqrt();
+                                            let distance: f32 = (x_squared + y_squared).sqrt();
 
                                             // got crackers!
                                             if distance
-                                                < ((client.radius + cracker_lock.radius) as f64)
+                                                < ((client.radius + cracker_lock.radius) as f32)
                                             {
                                                 println!(
                                                     "User {:?} getting crackers!",
