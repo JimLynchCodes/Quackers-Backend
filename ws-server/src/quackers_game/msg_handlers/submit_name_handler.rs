@@ -1,3 +1,4 @@
+use rand::thread_rng;
 use warp::filters::ws::Message;
 
 use crate::{
@@ -9,6 +10,8 @@ use crate::{
     },
     ClientConnections, ClientsGameData,
 };
+
+use rand::prelude::SliceRandom;
 
 pub async fn handle_submit_name_action(
     sender_client_id: &str,
@@ -35,8 +38,29 @@ pub async fn handle_submit_name_action(
             "mutating user with id: {}, new friendly_name: {}..",
             sender_client_id, submit_action_request_data.friendly_name
         );
-        mutable_game_data_gaurd.friendly_name = submit_action_request_data.friendly_name;
-    };
+        // mutable_game_data_gaurd.friendly_name = submit_action_request_data.friendly_name; // ignore request name for now
+
+        let available_names = vec![
+            "Jimbo".to_string(),
+            "Chip".to_string(),
+            "Francesca".to_string(),
+            "Lucy".to_string(),
+            "Jerome".to_string(),
+            "Phillonius".to_string(),
+            "Faran".to_string(),
+            "Cory".to_string(),
+        ];
+
+        let mut rng = thread_rng();
+
+        let randomly_chosen_name = match available_names.choose(&mut rng) {
+            Some(random_element) => random_element,
+            _ => "Guest",
+        };
+
+        mutable_game_data_gaurd.friendly_name = randomly_chosen_name.to_string();
+        mutable_game_data_gaurd.color = "blue".to_string();
+    }
 
     // Tell everyone about new user join
     for (_, tx) in client_connections_arc_mutex.lock().await.iter() {
