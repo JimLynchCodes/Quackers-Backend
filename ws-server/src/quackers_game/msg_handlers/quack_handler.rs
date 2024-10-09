@@ -4,7 +4,7 @@ use crate::{
     quackers_game::types::{
         game_state::ClientGameData,
         msg::OutgoingGameActionType,
-        quack_msg::{QuackResponseData, YouQuackedMsg},
+        quack_msg::{OtherQuackedMsg, QuackResponseData, YouQuackedMsg},
     },
     ClientConnections, ClientsGameData,
 };
@@ -104,7 +104,7 @@ async fn build_other_player_quacked_msg(
         &default_game_data
     });
 
-    let quack_message_struct = YouQuackedMsg {
+    let quack_message_struct = OtherQuackedMsg {
         action_type: OutgoingGameActionType::OtherPlayerQuacked,
         data: QuackResponseData {
             player_uuid: sender_game_data.client_id.to_string(),

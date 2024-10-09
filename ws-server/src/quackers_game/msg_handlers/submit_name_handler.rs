@@ -6,7 +6,7 @@ use crate::{
         defaults::available_duck_colors,
         game_state::ClientGameData,
         msg::{GenericIncomingRequest, OutgoingGameActionType},
-        player_join_msg::{JoinRequestData, NewJoinerData, YouJoinedMsg},
+        player_join_msg::{JoinRequestData, NewJoinerData, OtherPlayerJoinedMsg, YouJoinedMsg},
         quack_msg::{OtherQuackedMsg, QuackResponseData},
     },
     ClientConnections, ClientsGameData,
@@ -134,7 +134,7 @@ async fn build_you_joined_msg(
 
 async fn build_other_player_joined_msg(
     joiner_client_id: &str,
-    joinerClientsGameData: &ClientsGameData,
+    joiner_clients_game_data: &ClientsGameData,
 ) -> Message {
     let default_game_data = ClientGameData {
         client_id: "error".to_string(),
@@ -147,26 +147,26 @@ async fn build_other_player_joined_msg(
         cracker_count: 0,
     };
 
-    let gaurd = joinerClientsGameData.lock().await;
+    let gaurd = joiner_clients_game_data.lock().await;
 
     let sender_game_data = gaurd.get(joiner_client_id).unwrap_or_else(|| {
         println!("Couldn't find client with id: {}", joiner_client_id);
         &default_game_data
     });
 
-    let message_struct = OtherQuackedMsg {
+    let message_struct = OtherPlayerJoinedMsg {
         action_type: OutgoingGameActionType::OtherPlayerJoined,
-        data: QuackResponseData {
+        data: NewJoinerData {
             player_uuid: sender_game_data.client_id.to_string(),
             player_friendly_name: sender_game_data.friendly_name.clone(),
-            player_x_position: sender_game_data.x_pos,
-            player_y_position: sender_game_data.y_pos,
-            quack_pitch: sender_game_data.quack_pitch,
+            color: sender_game_data.color.clone(),
+            x_position: sender_game_data.x_pos,
+            y_position: sender_game_data.y_pos,
         },
     };
 
     let message_string = serde_json::ser::to_string(&message_struct).unwrap_or_else(|op| {
-        println!("Couldn't convert You Quacked struct to string");
+        println!("Couldn't convert Other Player Joined struct to string");
         "".to_string()
     });
 

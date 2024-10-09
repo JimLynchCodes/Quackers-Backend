@@ -68,24 +68,58 @@ pub async fn client_connection(
         .await
         .insert(uuid.clone(), new_client_game_data);
 
-    while let Some(result) = client_ws_rcv.next().await {
-        let msg = match result {
-            Ok(msg) => msg,
-            Err(e) => {
-                println!("error receiving message for id {}): {}", uuid.clone(), e);
-                break;
+    // while let Some(result) = client_ws_rcv.next().await {
+    //     let msg = match result {
+    //         Ok(msg) => msg,
+    //         Err(e) => {
+    //             println!("error receiving message for id {}): {}", uuid.clone(), e);
+    //             break;
+    //         }
+    //     };
+    //     client_msg(
+    //         &uuid,
+    //         msg,
+    //         &client_connections,
+    //         &clients_game_data,
+    //         &cracker,
+    //     )
+    //     .await;
+    // }
+
+    // Use a `loop` with an error handling block to ensure cleanup happens
+    let disconnect_reason = loop {
+        match client_ws_rcv.next().await {
+            Some(Ok(msg)) => {
+                // Process the message
+                let result = client_msg(
+                    &uuid,
+                    msg,
+                    &client_connections,
+                    &clients_game_data,
+                    &cracker,
+                )
+                .await;
+                println!("processed message 👍")
             }
-        };
-        client_msg(
-            &uuid,
-            msg,
-            &client_connections,
-            &clients_game_data,
-            &cracker,
-        )
-        .await;
-    }
+            Some(Err(e)) => {
+                // Handle WebSocket errors (e.g., network issues)
+                println!("error receiving message for id {}: {}", uuid.clone(), e);
+                break Some(format!("WebSocket error: {}", e)); // Capture error reason
+            }
+            None => {
+                // The client disconnected normally (e.g., closed their WebSocket)
+                println!("Client {} disconnected gracefully", uuid);
+                break None; // Graceful disconnection, no error
+            }
+        }
+    };
 
     client_connections.lock().await.remove(&uuid);
-    println!("{} disconnected", uuid);
+    clients_game_data.lock().await.remove(&uuid);
+
+    if let Some(reason) = disconnect_reason {
+        println!("{} disconnected with reason: {}", uuid, reason);
+    } else {
+        println!("{} disconnected gracefully", uuid);
+    }
 }
