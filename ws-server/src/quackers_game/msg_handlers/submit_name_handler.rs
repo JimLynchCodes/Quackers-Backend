@@ -3,6 +3,7 @@ use warp::filters::ws::Message;
 
 use crate::{
     quackers_game::types::{
+        defaults::available_duck_colors,
         game_state::ClientGameData,
         msg::{GenericIncomingRequest, OutgoingGameActionType},
         player_join_msg::{JoinRequestData, NewJoinerData, YouJoinedMsg},
@@ -58,8 +59,13 @@ pub async fn handle_submit_name_action(
             _ => "Guest",
         };
 
+        let randomly_chosen_color = match available_duck_colors.choose(&mut rng) {
+            Some(random_element) => random_element,
+            _ => "white",
+        };
+
         mutable_game_data_gaurd.friendly_name = randomly_chosen_name.to_string();
-        mutable_game_data_gaurd.color = "blue".to_string();
+        mutable_game_data_gaurd.color = randomly_chosen_color.to_string();
     }
 
     // Tell everyone about new user join

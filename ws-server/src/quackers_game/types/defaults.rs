@@ -11,15 +11,13 @@ pub const MIN_Y_POS: f32 = -1000.;
 pub const MAX_X_POS: f32 = 0.;
 pub const MAX_Y_POS: f32 = 0.;
 
-pub const DUCK_COLORS_LENGTH: usize = 6;
+pub const DUCK_COLORS_LENGTH: usize = 4;
 
 pub const available_duck_colors: [&str; DUCK_COLORS_LENGTH] = [
     "red",
     "blue",
     "green",
-    "purple",
-    "yellow",
-    "pink"
+    "white"
 ];
 
 pub const MIN_QUACK_MULTIPLIER: f32 = 0.33;
