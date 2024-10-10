@@ -9,7 +9,7 @@ use crate::{
         player_join_msg::{JoinRequestData, NewJoinerData, OtherPlayerJoinedMsg, YouJoinedMsg},
         quack_msg::{OtherQuackedMsg, QuackResponseData},
     },
-    ClientConnections, ClientsGameData,
+    ClientConnections, ClientsGameData, Cracker,
 };
 
 use rand::prelude::SliceRandom;
@@ -19,6 +19,7 @@ pub async fn handle_submit_name_action(
     json_message: GenericIncomingRequest,
     client_connections_arc_mutex: &ClientConnections,
     clients_game_data_arc_mutex: &ClientsGameData,
+    cracker_mutex: &Cracker,
 ) {
     // Unpack the request
     let submit_action_request_data: JoinRequestData = serde_json::from_value(json_message.data)
@@ -72,7 +73,7 @@ pub async fn handle_submit_name_action(
     for (_, tx) in client_connections_arc_mutex.lock().await.iter() {
         if &tx.client_id == sender_client_id {
             let you_joined_msg =
-                build_you_joined_msg(sender_client_id, &clients_game_data_arc_mutex).await;
+                build_you_joined_msg(sender_client_id, &clients_game_data_arc_mutex, &cracker_mutex).await;
 
             tx.sender
                 .as_ref()
@@ -81,7 +82,7 @@ pub async fn handle_submit_name_action(
                 .unwrap();
         } else {
             let other_player_joined_msg =
-                build_other_player_joined_msg(sender_client_id, &clients_game_data_arc_mutex).await;
+                build_other_player_joined_msg(sender_client_id, &clients_game_data_arc_mutex, &cracker_mutex).await;
             tx.sender
                 .as_ref()
                 .unwrap()
@@ -94,8 +95,13 @@ pub async fn handle_submit_name_action(
 async fn build_you_joined_msg(
     joiner_client_id: &str,
     clientsGameData: &ClientsGameData,
+    cracker: &Cracker,
 ) -> Message {
-    let default_game_data = ClientGameData {
+
+    let gaurd = clientsGameData.lock().await;
+    let cracker_gaurd = cracker.lock().await;
+
+    let default = ClientGameData {
         client_id: "error".to_string(),
         x_pos: 0.,
         y_pos: 0.,
@@ -106,11 +112,9 @@ async fn build_you_joined_msg(
         cracker_count: 0,
     };
 
-    let gaurd = clientsGameData.lock().await;
-
     let sender_game_data = gaurd.get(joiner_client_id).unwrap_or_else(|| {
         println!("Couldn't find client with id: {}", joiner_client_id);
-        &default_game_data
+        &default
     });
 
     let message_struct = YouJoinedMsg {
@@ -121,6 +125,9 @@ async fn build_you_joined_msg(
             color: sender_game_data.color.clone(),
             x_position: sender_game_data.x_pos,
             y_position: sender_game_data.x_pos,
+            cracker_x: cracker_gaurd.x_pos,
+            cracker_y: cracker_gaurd.y_pos,
+            cracker_points: cracker_gaurd.points,
         },
     };
 
@@ -135,6 +142,7 @@ async fn build_you_joined_msg(
 async fn build_other_player_joined_msg(
     joiner_client_id: &str,
     joiner_clients_game_data: &ClientsGameData,
+    cracker: &Cracker,
 ) -> Message {
     let default_game_data = ClientGameData {
         client_id: "error".to_string(),
@@ -148,6 +156,7 @@ async fn build_other_player_joined_msg(
     };
 
     let gaurd = joiner_clients_game_data.lock().await;
+    let cracker_gaurd = cracker.lock().await;
 
     let sender_game_data = gaurd.get(joiner_client_id).unwrap_or_else(|| {
         println!("Couldn't find client with id: {}", joiner_client_id);
@@ -162,6 +171,9 @@ async fn build_other_player_joined_msg(
             color: sender_game_data.color.clone(),
             x_position: sender_game_data.x_pos,
             y_position: sender_game_data.y_pos,
+            cracker_x: cracker_gaurd.x_pos,
+            cracker_y: cracker_gaurd.y_pos,
+            cracker_points: cracker_gaurd.points,
         },
     };
 

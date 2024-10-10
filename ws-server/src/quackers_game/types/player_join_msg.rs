@@ -15,6 +15,9 @@ pub struct NewJoinerData {
     pub color: String,
     pub x_position: f32,
     pub y_position: f32,
+    pub cracker_x: f32,
+    pub cracker_y: f32,
+    pub cracker_points: u64,
 }
 
 #[derive(Debug, Serialize)]

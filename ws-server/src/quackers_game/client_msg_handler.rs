@@ -52,6 +52,7 @@ pub async fn client_msg(
                 json_message.clone(),
                 &client_connections_arc_mutex,
                 &client_data_arc_mutex,
+                &cracker
             )
             .await
         }
