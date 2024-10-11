@@ -1,5 +1,4 @@
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde::Serialize;
 
 use super::msg::OutgoingGameActionType;
 

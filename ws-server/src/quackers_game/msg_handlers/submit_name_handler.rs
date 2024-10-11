@@ -3,11 +3,10 @@ use warp::filters::ws::Message;
 
 use crate::{
     quackers_game::types::{
-        defaults::available_duck_colors,
+        defaults::AVAILABLE_DUCK_COLORS,
         game_state::ClientGameData,
         msg::{GenericIncomingRequest, OutgoingGameActionType},
         player_join_msg::{JoinRequestData, NewJoinerData, OtherPlayerJoinedMsg, YouJoinedMsg},
-        quack_msg::{OtherQuackedMsg, QuackResponseData},
     },
     ClientConnections, ClientsGameData, Cracker,
 };
@@ -23,7 +22,7 @@ pub async fn handle_submit_name_action(
 ) {
     // Unpack the request
     let submit_action_request_data: JoinRequestData = serde_json::from_value(json_message.data)
-        .unwrap_or_else(|err| {
+        .unwrap_or_else(|_err| {
             println!("Couldn't convert data to JoinRequestData struct");
             JoinRequestData {
                 friendly_name: "".to_string(),
@@ -40,7 +39,6 @@ pub async fn handle_submit_name_action(
             "mutating user with id: {}, new friendly_name: {}..",
             sender_client_id, submit_action_request_data.friendly_name
         );
-        // mutable_game_data_gaurd.friendly_name = submit_action_request_data.friendly_name; // ignore request name for now
 
         let available_names = vec![
             "Jimbo".to_string(),
@@ -60,7 +58,7 @@ pub async fn handle_submit_name_action(
             _ => "Guest",
         };
 
-        let randomly_chosen_color = match available_duck_colors.choose(&mut rng) {
+        let randomly_chosen_color = match AVAILABLE_DUCK_COLORS.choose(&mut rng) {
             Some(random_element) => random_element,
             _ => "white",
         };
@@ -94,11 +92,11 @@ pub async fn handle_submit_name_action(
 
 async fn build_you_joined_msg(
     joiner_client_id: &str,
-    clientsGameData: &ClientsGameData,
+    clients_game_data: &ClientsGameData,
     cracker: &Cracker,
 ) -> Message {
 
-    let gaurd = clientsGameData.lock().await;
+    let gaurd = clients_game_data.lock().await;
     let cracker_gaurd = cracker.lock().await;
 
     let default = ClientGameData {
@@ -131,7 +129,7 @@ async fn build_you_joined_msg(
         },
     };
 
-    let message_string = serde_json::ser::to_string(&message_struct).unwrap_or_else(|op| {
+    let message_string = serde_json::ser::to_string(&message_struct).unwrap_or_else(|_op| {
         println!("Couldn't convert You Joined struct to string");
         "".to_string()
     });
@@ -177,7 +175,7 @@ async fn build_other_player_joined_msg(
         },
     };
 
-    let message_string = serde_json::ser::to_string(&message_struct).unwrap_or_else(|op| {
+    let message_string = serde_json::ser::to_string(&message_struct).unwrap_or_else(|_op| {
         println!("Couldn't convert Other Player Joined struct to string");
         "".to_string()
     });

@@ -74,7 +74,7 @@ async fn build_you_quacked_msg(
     };
 
     let quack_message_string =
-        serde_json::ser::to_string(&quack_message_struct).unwrap_or_else(|op| {
+        serde_json::ser::to_string(&quack_message_struct).unwrap_or_else(|_op| {
             println!("Couldn't convert You Quacked struct to string");
             "".to_string()
         });
@@ -116,7 +116,7 @@ async fn build_other_player_quacked_msg(
     };
 
     let quack_message_string =
-        serde_json::ser::to_string(&quack_message_struct).unwrap_or_else(|op| {
+        serde_json::ser::to_string(&quack_message_struct).unwrap_or_else(|_op| {
             println!("Couldn't convert You Quacked struct to string");
             "".to_string()
         });

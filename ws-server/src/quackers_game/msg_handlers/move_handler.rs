@@ -9,7 +9,6 @@ use crate::{
             got_crackers_msg::{GotCrackerResponseData, YouGotCrackerMsg},
             msg::{GenericIncomingRequest, OutgoingGameActionType},
             player_move_msg::{MoveRequestData, MoveResponseData, OtherMovedMsg, YouMovedMsg},
-            quack_msg::{OtherQuackedMsg, QuackResponseData, YouQuackedMsg},
         },
     },
     ClientConnections, ClientsGameData, Cracker,
@@ -22,8 +21,9 @@ pub async fn handle_move_action(
     clients_game_data_arc_mutex: &ClientsGameData,
     cracker: &Cracker,
 ) {
-    println!("Move request: {:?}", &json_message.data);
-    // Unpack the request
+    println!("Move request received: {:?}", &json_message.data);
+    
+    // Unpack the move request
     let move_request_data: MoveRequestData = serde_json::from_value(json_message.data)
         .unwrap_or_else(|err| {
             println!("Couldn't convert data to MoveRequestData struct: {:?}", err);
@@ -33,12 +33,13 @@ pub async fn handle_move_action(
             }
         });
 
+    // TODO - Add dangerous objects so players can die 
     // let did_player_die = check_if_player_died(clients_game_data_arc_mutex);
+
     let found_cracker =
         check_if_player_touched_crackers(sender_client_id, clients_game_data_arc_mutex, cracker)
             .await;
 
-    // No need to unpack the request data
     let moved_player = try_to_move_player(
         sender_client_id,
         clients_game_data_arc_mutex,
@@ -208,7 +209,7 @@ async fn build_you_moved_msg(you_moved_response_data: &MoveResponseData) -> Mess
     };
 
     let you_moved_msg_string = serde_json::ser::to_string(&you_moved_message_struct)
-        .unwrap_or_else(|op| {
+        .unwrap_or_else(|_op| {
             println!("Couldn't convert YouMoved struct to string");
             "".to_string()
         });
@@ -223,7 +224,7 @@ async fn build_you_got_cracker_msg(got_cracker_response_data: &GotCrackerRespons
     };
 
     let you_got_cracker_msg_string = serde_json::ser::to_string(&you_got_cracker_message_struct)
-        .unwrap_or_else(|op| {
+        .unwrap_or_else(|_op| {
             println!("Couldn't convert YouGotCracker struct to string");
             "".to_string()
         });
@@ -238,7 +239,7 @@ async fn build_other_player_moved_msg(move_response_data: &MoveResponseData) -> 
     };
 
     let other_player_moved_msg_string =
-        serde_json::ser::to_string(&other_player_moved_message_struct).unwrap_or_else(|op| {
+        serde_json::ser::to_string(&other_player_moved_message_struct).unwrap_or_else(|_op| {
             println!("Couldn't convert OtherPlayerMoved struct to string");
             "".to_string()
         });
@@ -255,7 +256,7 @@ async fn build_other_player_got_cracker_msg(
     };
 
     let other_player_got_cracker_msg_string =
-        serde_json::ser::to_string(&other_player_got_cracker_message_struct).unwrap_or_else(|op| {
+        serde_json::ser::to_string(&other_player_got_cracker_message_struct).unwrap_or_else(|_op| {
             println!("Couldn't convert OtherPlayerGotCracker struct to string");
             "".to_string()
         });

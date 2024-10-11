@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use super::msg::OutgoingGameActionType;
 
 // Player sends a "friendly name" and then other players can see
+// Note: currently name is generated randomly by server and this friendly_name is ignored
 
 #[derive(Debug, Deserialize)]
 pub struct JoinRequestData {

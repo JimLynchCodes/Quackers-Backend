@@ -6,19 +6,10 @@ use crate::quackers_game::types::game_state::{ClientConnection, ClientGameData};
 use crate::{ClientConnections, ClientsGameData, Cracker};
 
 use futures::{FutureExt, StreamExt};
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 use uuid::Uuid;
-use warp::ws::{Message, WebSocket};
-
-use std::convert::TryInto;
-use std::{
-    str::FromStr,
-    sync::{Arc, Mutex},
-};
-use strum_macros::EnumString;
+use warp::ws::WebSocket;
 
 pub async fn client_connection(
     ws: WebSocket,
@@ -52,7 +43,6 @@ pub async fn client_connection(
         .insert(uuid.clone(), new_client_connection);
 
     let new_client_game_data = ClientGameData {
-        // sender: Some(client_sender),
         client_id: uuid.clone(),
         friendly_name: "[NO_NAME]".to_string(),
         color: "red".to_string(),
@@ -68,30 +58,12 @@ pub async fn client_connection(
         .await
         .insert(uuid.clone(), new_client_game_data);
 
-    // while let Some(result) = client_ws_rcv.next().await {
-    //     let msg = match result {
-    //         Ok(msg) => msg,
-    //         Err(e) => {
-    //             println!("error receiving message for id {}): {}", uuid.clone(), e);
-    //             break;
-    //         }
-    //     };
-    //     client_msg(
-    //         &uuid,
-    //         msg,
-    //         &client_connections,
-    //         &clients_game_data,
-    //         &cracker,
-    //     )
-    //     .await;
-    // }
-
     // Use a `loop` with an error handling block to ensure cleanup happens
     let disconnect_reason = loop {
         match client_ws_rcv.next().await {
             Some(Ok(msg)) => {
                 // Process the message
-                let result = client_msg(
+                let _result = client_msg(
                     &uuid,
                     msg,
                     &client_connections,
