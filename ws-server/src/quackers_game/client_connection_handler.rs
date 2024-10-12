@@ -1,6 +1,6 @@
 use crate::quackers_game::client_msg_handler::client_msg;
 use crate::quackers_game::types::defaults::{
-    PLAYER_X_DEFAULT_START_POSTION, PLAYER_Y_DEFAULT_START_POSTION,
+    PLAYER_RADIUS, PLAYER_X_DEFAULT_START_POSTION, PLAYER_Y_DEFAULT_START_POSTION
 };
 use crate::quackers_game::types::game_state::{ClientConnection, ClientGameData};
 use crate::{ClientConnections, ClientsGameData, Cracker};
@@ -49,7 +49,7 @@ pub async fn client_connection(
         quack_pitch: 1.0,
         x_pos: PLAYER_X_DEFAULT_START_POSTION,
         y_pos: PLAYER_Y_DEFAULT_START_POSTION,
-        radius: 20,
+        radius: PLAYER_RADIUS,
         cracker_count: 0,
     };
 

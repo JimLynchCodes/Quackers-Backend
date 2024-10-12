@@ -22,4 +22,5 @@ pub const _MAX_QUACK_MULTIPLIER: f32 = 2.2;
 pub const BASE_CRACKER_POINT_VALUE: u64 = 10;
 pub const RANDOM_CRACKER_POINT_VALUE: u64 = 10;
 
-pub const CRACKER_RADIUS: u64 = 5;
+pub const PLAYER_RADIUS: u64 = 50;
+pub const CRACKER_RADIUS: u64 = 20;

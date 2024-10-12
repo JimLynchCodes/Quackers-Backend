@@ -22,7 +22,7 @@ pub async fn handle_move_action(
     cracker: &Cracker,
 ) {
     println!("Move request received: {:?}", &json_message.data);
-    
+
     // Unpack the move request
     let move_request_data: MoveRequestData = serde_json::from_value(json_message.data)
         .unwrap_or_else(|err| {
@@ -33,7 +33,7 @@ pub async fn handle_move_action(
             }
         });
 
-    // TODO - Add dangerous objects so players can die 
+    // TODO - Add dangerous objects so players can die
     // let did_player_die = check_if_player_died(clients_game_data_arc_mutex);
 
     let found_cracker =
@@ -59,6 +59,7 @@ pub async fn handle_move_action(
             }
 
             if let Some(cracker) = &found_cracker {
+                println!("Building you got crackers message");
                 let you_got_cracker_msg = build_you_got_cracker_msg(&cracker).await;
 
                 tx.sender
@@ -126,29 +127,40 @@ async fn check_if_player_touched_crackers(
 
     let distance: f32 = (x_squared + y_squared).sqrt();
 
-    // got crackers!
-    if distance < ((client.radius + cracker_lock.radius) as f32) {
-        println!("User {:?} getting crackers!", client.friendly_name);
+    let combined_radii = client.radius + cracker_lock.radius;
 
+    println!(
+        "Comparing distance from cracker: {} to combined radii: {}",
+        distance, combined_radii
+    );
+
+    // got crackers!
+    if distance < (combined_radii as f32) {
         let old_cracker_points = cracker_lock.points.clone();
         let old_cracker_pos_x = cracker_lock.x_pos.clone();
         let old_cracker_pos_y = cracker_lock.y_pos.clone();
 
         client.cracker_count += old_cracker_points;
 
+        println!(
+            "User {:?} getting crackers! new score: {}",
+            client.friendly_name, client.cracker_count
+        );
+
+        // create a new cracker and save it
+        *cracker_lock = generate_random_cracker_data();
+
         let cracker_response_data = GotCrackerResponseData {
             player_uuid: client.client_id.clone(),
             player_friendly_name: client.friendly_name.clone(),
             old_cracker_x_position: old_cracker_pos_x,
             old_cracker_y_position: old_cracker_pos_y,
-            cracker_point_value: old_cracker_points,
+            old_cracker_point_value: old_cracker_points,
+            new_cracker_point_value: cracker_lock.points,
             new_player_score: client.cracker_count,
             new_cracker_x_position: cracker_lock.x_pos,
             new_cracker_y_position: cracker_lock.y_pos,
         };
-
-        // create a new cracker and save it
-        *cracker_lock = generate_random_cracker_data();
 
         return Some(cracker_response_data);
     }
@@ -255,11 +267,13 @@ async fn build_other_player_got_cracker_msg(
         data: got_cracker_response_data.clone(),
     };
 
-    let other_player_got_cracker_msg_string =
-        serde_json::ser::to_string(&other_player_got_cracker_message_struct).unwrap_or_else(|_op| {
-            println!("Couldn't convert OtherPlayerGotCracker struct to string");
-            "".to_string()
-        });
+    let other_player_got_cracker_msg_string = serde_json::ser::to_string(
+        &other_player_got_cracker_message_struct,
+    )
+    .unwrap_or_else(|_op| {
+        println!("Couldn't convert OtherPlayerGotCracker struct to string");
+        "".to_string()
+    });
 
     Message::text(other_player_got_cracker_msg_string)
 }

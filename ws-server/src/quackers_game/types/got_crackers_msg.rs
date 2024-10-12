@@ -6,12 +6,17 @@ use super::msg::OutgoingGameActionType;
 pub struct GotCrackerResponseData {
     pub player_uuid: String,
     pub player_friendly_name: String,
+    
     pub old_cracker_x_position: f32,
     pub old_cracker_y_position: f32,
-    pub cracker_point_value: u64,
-    pub new_player_score: u64,
+    
     pub new_cracker_x_position: f32,
     pub new_cracker_y_position: f32,
+    
+    pub old_cracker_point_value: u64,
+    pub new_cracker_point_value: u64,
+    
+    pub new_player_score: u64,
 }
 
 #[derive(Debug, Serialize)]
