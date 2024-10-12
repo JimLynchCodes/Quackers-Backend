@@ -1,6 +1,6 @@
 use crate::quackers_game::client_msg_handler::client_msg;
 use crate::quackers_game::types::defaults::{
-    PLAYER_RADIUS, PLAYER_X_DEFAULT_START_POSTION, PLAYER_Y_DEFAULT_START_POSTION
+    PLAYER_RADIUS, PLAYER_X_DEFAULT_START_POSTION, PLAYER_Y_DEFAULT_START_POSTION,
 };
 use crate::quackers_game::types::game_state::{ClientConnection, ClientGameData};
 use crate::{ClientConnections, ClientsGameData, Cracker};
@@ -9,7 +9,11 @@ use futures::{FutureExt, StreamExt};
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 use uuid::Uuid;
+use warp::filters::ws::Message;
 use warp::ws::WebSocket;
+
+use super::types::msg::OutgoingGameActionType;
+use super::types::user_disconnected_msg::{UserDisconnectedData, UserDisconnectedMsg};
 
 pub async fn client_connection(
     ws: WebSocket,
@@ -93,5 +97,35 @@ pub async fn client_connection(
         println!("{} disconnected with reason: {}", uuid, reason);
     } else {
         println!("{} disconnected gracefully", uuid);
+
+        // Tell other players that user disconnected
+        for (_, tx) in client_connections.lock().await.iter() {
+            if &tx.client_id != &uuid {
+                let user_disconnected_msg = build_user_disconnected_msg(&uuid);
+
+                tx.sender
+                    .as_ref()
+                    .unwrap()
+                    .send(Ok(user_disconnected_msg))
+                    .unwrap();
+            }
+        }
     }
+}
+
+fn build_user_disconnected_msg(uuid: &str) -> Message {
+    let user_disconnected_message_struct = UserDisconnectedMsg {
+        action_type: OutgoingGameActionType::UserDisconnected,
+        data: UserDisconnectedData {
+            disconnected_player_uuid: uuid.to_string(),
+        },
+    };
+
+    let user_disconnected_msg_string =
+        serde_json::ser::to_string(&user_disconnected_message_struct).unwrap_or_else(|_op| {
+            println!("Couldn't convert UserDisconnected struct to string");
+            "".to_string()
+        });
+
+    Message::text(user_disconnected_msg_string)
 }

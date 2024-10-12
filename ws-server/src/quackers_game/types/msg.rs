@@ -52,4 +52,7 @@ pub enum OutgoingGameActionType {
     YouGotDied,
     #[strum(serialize = "other_player_died", serialize = "opd")]
     OtherPlayerGotDied,
+    
+    #[strum(serialize = "user_disconnected", serialize = "ud")]
+    UserDisconnected,
 }
