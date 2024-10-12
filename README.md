@@ -13,7 +13,7 @@ The server will run on 127.0.0.1:8000.
 
 ## Frontend
 
-To get the full game experience, you can also run the front-end code for this (also a Rust project, made with Bevy).
+To get the full game experience, you can also run the [front-end code](https://github.com/JimLynchCodes/Quackers-Frontend) for this (also a Rust project, made with Bevy).
 
 
 ## Requests Accepted
