@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::convert::TryFrom;
 use std::{collections::HashMap, hash::RandomState, sync::Mutex};
 
@@ -136,8 +137,18 @@ pub async fn recalculate_leaderboard_positions(
 
     // Sorts clients, mutating vetor in place
     // Sort the clients in descending order based on cracker_count
-    clients_game_data_vec.sort_by(|a, b| b.1.cracker_count.cmp(&a.1.cracker_count));
-
+    // clients_game_data_vec.sort_by(|a, b| b.1.cracker_count.cmp(&a.1.cracker_count));
+    
+    clients_game_data_vec.sort_by(|a, b| {
+        let count_cmp = b.1.cracker_count.cmp(&a.1.cracker_count); // Compare cracker_count
+        if count_cmp == Ordering::Equal {
+            // If counts are equal, reverse the original order
+            a.0.cmp(b.0) // Change to a.0.cmp(b.0) if you want ascending order for names
+        } else {
+            count_cmp // Otherwise, return the comparison result of cracker_count
+        }
+    });
+    
     // clients_game_data_vec
     //     .sort_by(|a: &(&String, &ClientGameData), b: &(&String, &ClientGameData)| b.1.cracker_count.cmp(&a.1.cracker_count));
 
@@ -147,6 +158,34 @@ pub async fn recalculate_leaderboard_positions(
     // }
 
     let mut leaderboard_gaurd = leaderboard.lock().await;
+
+    // clear out all leaderboard slots fi we need to
+    let clients_connected_length = clients_game_data_vec.len();
+
+    if clients_connected_length == 0 {
+        leaderboard_gaurd.leaderboard_name_1st_place = "--".to_string();
+        leaderboard_gaurd.leaderboard_score_1st_place = 0;
+    }
+
+    if clients_connected_length <= 1 {
+        leaderboard_gaurd.leaderboard_name_2nd_place = "--".to_string();
+        leaderboard_gaurd.leaderboard_score_2nd_place = 0;
+    }
+
+    if clients_connected_length <= 2 {
+        leaderboard_gaurd.leaderboard_name_3rd_place = "--".to_string();
+        leaderboard_gaurd.leaderboard_score_3rd_place = 0;
+    }
+
+    if clients_connected_length <= 3 {
+        leaderboard_gaurd.leaderboard_name_4th_place = "--".to_string();
+        leaderboard_gaurd.leaderboard_score_4th_place = 0;
+    }
+
+    if clients_connected_length <= 4 {
+        leaderboard_gaurd.leaderboard_name_5th_place = "--".to_string();
+        leaderboard_gaurd.leaderboard_score_5th_place = 0;
+    }
 
     for (index, (_uuid, client_game_data)) in clients_game_data_vec.iter_mut().enumerate() {
         if let Ok(index_u64) = u64::try_from(index) {
