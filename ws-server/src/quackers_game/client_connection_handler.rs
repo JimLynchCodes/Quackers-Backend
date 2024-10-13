@@ -1,9 +1,12 @@
 use crate::quackers_game::client_msg_handler::client_msg;
+use crate::quackers_game::msg_handlers::submit_name_handler::{
+    build_leaderboard_update_msg, recalculate_leaderboard_positions,
+};
 use crate::quackers_game::types::defaults::{
     PLAYER_RADIUS, PLAYER_X_DEFAULT_START_POSTION, PLAYER_Y_DEFAULT_START_POSTION,
 };
 use crate::quackers_game::types::game_state::{ClientConnection, ClientGameData};
-use crate::{ClientConnections, ClientsGameData, Cracker};
+use crate::{ClientConnections, ClientsGameData, Cracker, Leaderboard};
 
 use futures::{FutureExt, StreamExt};
 use tokio::sync::mpsc;
@@ -20,6 +23,7 @@ pub async fn client_connection(
     client_connections: ClientConnections,
     clients_game_data: ClientsGameData,
     cracker: Cracker,
+    leaderboard: Leaderboard,
 ) {
     println!("establishing client connection... {:?}", ws);
 
@@ -55,6 +59,7 @@ pub async fn client_connection(
         y_pos: PLAYER_Y_DEFAULT_START_POSTION,
         radius: PLAYER_RADIUS,
         cracker_count: 0,
+        leaderboard_position: 0,
     };
 
     clients_game_data
@@ -73,6 +78,7 @@ pub async fn client_connection(
                     &client_connections,
                     &clients_game_data,
                     &cracker,
+                    &leaderboard,
                 )
                 .await;
                 println!("processed message 👍")
@@ -98,15 +104,30 @@ pub async fn client_connection(
     } else {
         println!("{} disconnected gracefully", uuid);
 
+        recalculate_leaderboard_positions(&clients_game_data, &leaderboard).await;
+
         // Tell other players that user disconnected
         for (_, tx) in client_connections.lock().await.iter() {
             if &tx.client_id != &uuid {
+                // send disconnect message
                 let user_disconnected_msg = build_user_disconnected_msg(&uuid);
 
                 tx.sender
                     .as_ref()
                     .unwrap()
                     .send(Ok(user_disconnected_msg))
+                    .unwrap();
+
+                // send leaderboard update message
+                let leaderboard_update_msg =
+                    build_leaderboard_update_msg(&tx.client_id, &clients_game_data, &leaderboard)
+                        .await;
+
+                // Send same leaderboard update message to all players
+                tx.sender
+                    .as_ref()
+                    .unwrap()
+                    .send(Ok(leaderboard_update_msg))
                     .unwrap();
             }
         }

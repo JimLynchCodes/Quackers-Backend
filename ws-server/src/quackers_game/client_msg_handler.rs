@@ -4,7 +4,7 @@ use crate::quackers_game::msg_handlers::move_handler::handle_move_action;
 use crate::quackers_game::msg_handlers::quack_handler::handle_quack_action;
 use crate::quackers_game::msg_handlers::submit_name_handler::handle_submit_name_action;
 use crate::quackers_game::types::msg::{GenericIncomingRequest, IncomingGameActionType};
-use crate::{ClientConnections, ClientsGameData, Cracker};
+use crate::{ClientConnections, ClientsGameData, Cracker, Leaderboard};
 
 use serde_json::Value;
 use warp::ws::Message;
@@ -15,6 +15,7 @@ pub async fn client_msg(
     client_connections_arc_mutex: &ClientConnections,
     client_data_arc_mutex: &ClientsGameData,
     cracker: &Cracker,
+    leaderboard: &Leaderboard,
 ) {
     println!("received message from {}: {:?}", client_id, msg);
 
@@ -31,7 +32,8 @@ pub async fn client_msg(
                 json_message.clone(),
                 &client_connections_arc_mutex,
                 &client_data_arc_mutex,
-                &cracker
+                &cracker,
+                &leaderboard
             )
             .await
         }
@@ -50,6 +52,7 @@ pub async fn client_msg(
                 client_connections_arc_mutex,
                 client_data_arc_mutex,
                 cracker,
+                leaderboard
             )
             .await
         }

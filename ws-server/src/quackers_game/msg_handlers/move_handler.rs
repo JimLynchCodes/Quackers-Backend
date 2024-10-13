@@ -3,6 +3,9 @@ use warp::filters::ws::Message;
 use crate::{
     quackers_game::{
         cracker_creator::generate_random_cracker_data,
+        msg_handlers::submit_name_handler::{
+            build_leaderboard_update_msg, recalculate_leaderboard_positions,
+        },
         types::{
             defaults::{MAX_X_POS, MAX_Y_POS, MIN_X_POS, MIN_Y_POS},
             game_state::ClientGameData,
@@ -11,15 +14,16 @@ use crate::{
             player_move_msg::{MoveRequestData, MoveResponseData, OtherMovedMsg, YouMovedMsg},
         },
     },
-    ClientConnections, ClientsGameData, Cracker,
+    ClientConnections, ClientsGameData, Cracker, Leaderboard,
 };
 
 pub async fn handle_move_action(
     sender_client_id: &str,
     json_message: GenericIncomingRequest,
-    client_connections_arc_mutex: &ClientConnections,
-    clients_game_data_arc_mutex: &ClientsGameData,
-    cracker: &Cracker,
+    client_connections_mutex: &ClientConnections,
+    clients_game_data_mutex: &ClientsGameData,
+    cracker_mutex: &Cracker,
+    leaderboard_mutex: &Leaderboard,
 ) {
     println!("Move request received: {:?}", &json_message.data);
 
@@ -37,18 +41,18 @@ pub async fn handle_move_action(
     // let did_player_die = check_if_player_died(clients_game_data_arc_mutex);
 
     let found_cracker =
-        check_if_player_touched_crackers(sender_client_id, clients_game_data_arc_mutex, cracker)
+        check_if_player_touched_crackers(sender_client_id, clients_game_data_mutex, cracker_mutex)
             .await;
 
     let moved_player = try_to_move_player(
         sender_client_id,
-        clients_game_data_arc_mutex,
+        clients_game_data_mutex,
         &move_request_data,
     )
     .await;
 
     // Send move message (and found cracker message, if cracker was found) to connected clients
-    for (_, tx) in client_connections_arc_mutex.lock().await.iter() {
+    for (_, tx) in client_connections_mutex.lock().await.iter() {
         if &tx.client_id == sender_client_id {
             // Client that send initial request message
 
@@ -91,6 +95,27 @@ pub async fn handle_move_action(
                     .unwrap();
             }
         }
+
+        // if found cracker, recalc leaderboard and send update message to everyone
+        if let Some(_cracker) = &found_cracker {
+            
+            println!("Found a cracker, recalculating leaderboard...");
+
+            recalculate_leaderboard_positions(&clients_game_data_mutex, &leaderboard_mutex).await;
+
+            let leaderboard_update_msg = build_leaderboard_update_msg(
+                &tx.client_id,
+                &clients_game_data_mutex,
+                &leaderboard_mutex,
+            )
+            .await;
+
+            tx.sender
+                .as_ref()
+                .unwrap()
+                .send(Ok(leaderboard_update_msg))
+                .unwrap();
+        }
     }
 }
 
@@ -112,6 +137,7 @@ async fn check_if_player_touched_crackers(
         color: "error".to_string(),
         quack_pitch: 0.,
         cracker_count: 0,
+        leaderboard_position: 0,
     };
 
     let client: &mut ClientGameData =

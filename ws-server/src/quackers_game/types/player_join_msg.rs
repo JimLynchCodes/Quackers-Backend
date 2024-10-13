@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use super::msg::OutgoingGameActionType;
+use serde::{Deserialize, Serialize};
 
 // Player sends a "friendly name" and then other players can see
 // Note: currently name is generated randomly by server and this friendly_name is ignored
@@ -19,6 +19,8 @@ pub struct NewJoinerData {
     pub cracker_x: f32,
     pub cracker_y: f32,
     pub cracker_points: u64,
+
+    pub player_points: u64
 }
 
 #[derive(Debug, Serialize)]
@@ -32,6 +34,3 @@ pub struct OtherPlayerJoinedMsg {
     pub action_type: OutgoingGameActionType,
     pub data: NewJoinerData,
 }
-
-
-

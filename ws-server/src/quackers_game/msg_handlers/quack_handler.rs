@@ -53,6 +53,7 @@ async fn build_you_quacked_msg(
         color: "error".to_string(),
         quack_pitch: 0.,
         cracker_count: 0,
+        leaderboard_position: 0
     };
 
     let gaurd = quacker_clients_game_data.lock().await;
@@ -95,6 +96,7 @@ async fn build_other_player_quacked_msg(
         color: "error".to_string(),
         quack_pitch: 0.,
         cracker_count: 0,
+        leaderboard_position: 0
     };
 
     let gaurd = quacker_clients_game_data.lock().await;

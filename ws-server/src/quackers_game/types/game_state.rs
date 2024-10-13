@@ -19,6 +19,7 @@ pub struct ClientGameData {
     pub quack_pitch: f32,
 
     pub cracker_count: u64,
+    pub leaderboard_position: u64
 }
 
 pub struct CrackerData {
@@ -26,4 +27,18 @@ pub struct CrackerData {
     pub x_pos: f32,
     pub y_pos: f32,
     pub radius: u64,
+}
+
+pub struct LeaderboardData {
+    pub leaderboard_name_1st_place: String,
+    pub leaderboard_name_2nd_place: String,
+    pub leaderboard_name_3rd_place: String,
+    pub leaderboard_name_4th_place: String,
+    pub leaderboard_name_5th_place: String,
+
+    pub leaderboard_score_1st_place: u64,
+    pub leaderboard_score_2nd_place: u64,
+    pub leaderboard_score_3rd_place: u64,
+    pub leaderboard_score_4th_place: u64,
+    pub leaderboard_score_5th_place: u64,
 }

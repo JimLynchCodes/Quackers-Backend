@@ -55,4 +55,7 @@ pub enum OutgoingGameActionType {
     
     #[strum(serialize = "user_disconnected", serialize = "ud")]
     UserDisconnected,
+    
+    #[strum(serialize = "leaderboard_update", serialize = "lu")]
+    LeaderboardUpdate,
 }
