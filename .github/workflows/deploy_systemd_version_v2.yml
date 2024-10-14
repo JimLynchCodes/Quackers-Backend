@@ -1,0 +1,52 @@
+name: Deploy Rust Project to DigitalOcean
+
+on:
+  push:
+    tags:
+      - '*'  # Trigger deployment on any new tag
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: ${{ secrets.DO_SSH_KEY }}
+
+    - name: Copy project files to server
+      run: |
+        scp -r ./ root@your-server-ip:/path/to/your/project
+
+    - name: SSH into server, build Rust project, and restart systemd service
+      run: |
+        ssh root@your-server-ip 'cd /path/to/your/project && cargo build --release'
+
+    - name: SSH into server and set up systemd service
+      run: |
+        ssh root@your-server-ip "bash -c 'echo \"[Unit]
+Description=My Rust Project Service
+After=network.target
+
+[Service]
+ExecStart=/path/to/your/project/target/release/your_project_binary
+Restart=on-failure
+RestartSec=5
+WorkingDirectory=/path/to/your/project
+User=root
+Environment=\\\"RUST_LOG=info\\\"
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=my_rust_project
+
+[Install]
+WantedBy=multi-user.target
+\" > /etc/systemd/system/my_rust_project.service'"
+
+    - name: Reload systemd and restart the service
+      run: |
+        ssh root@your-server-ip 'sudo systemctl daemon-reload && sudo systemctl enable my_rust_project.service --now'

@@ -1,0 +1,46 @@
+# Just add you digital ocean ssh key as the github secret: DO_SSH_KEY
+# Redeploys on new tags 👍
+
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    tags:
+      - '*'  # Trigger deployment on any new tag
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: ${{ secrets.DO_SSH_KEY }}
+
+    - name: Copy files to server
+      run: |
+        scp -r ./ root@your-server-ip:/path/to/your/project
+
+    - name: SSH and deploy on server
+      run: |
+        ssh root@your-server-ip << 'EOF'
+          cd /path/to/your/project
+          # Ensure the necessary tools are installed
+          sudo apt-get update
+          sudo apt-get install -y build-essential curl
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          source $HOME/.cargo/env
+          
+          # Build the project in release mode
+          cargo build --release
+          
+          # Stop the current running binary if any
+          pkill -f your_project_binary || true
+          
+          # Run the newly built binary in the background
+          nohup ./target/release/your_project_binary &
+        EOF
