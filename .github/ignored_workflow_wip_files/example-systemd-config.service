@@ -1,0 +1,11 @@
+[Unit]
+Description=Your Rust App
+After=network.target
+
+[Service]
+ExecStart=/home/user/your_app
+Restart=on-failure
+User=user
+
+[Install]
+WantedBy=multi-user.target
