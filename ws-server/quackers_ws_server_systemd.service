@@ -1,0 +1,12 @@
+[Unit]
+Description=Quackers WS Server Beta
+After=network.target
+
+[Service]
+ExecStart=/live/quackers-ws-server
+Restart=on-failure
+User=user
+Environment="QUACKERS_WS_ENVIRONMENT=beta"
+
+[Install]
+WantedBy=multi-user.target

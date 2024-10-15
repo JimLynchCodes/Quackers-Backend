@@ -1,5 +1,5 @@
 [package]
-name = "warp-websocket-server-tutorial"
+name = "quackers-ws-server"
 version = "0.1.0"
 edition = "2018"
 
