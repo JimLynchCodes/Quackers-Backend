@@ -21,8 +21,11 @@ jobs:
       - name: Navigate Into ws-server Directory
         run: cd ws-server
 
+      - name: Ls
+        run: ls
+
       - name: Install dependencies
-        run: cargo build --release
+        run: cd ws-server && cargo build --release
 
       - name: Run tests
         run: cargo test --release
