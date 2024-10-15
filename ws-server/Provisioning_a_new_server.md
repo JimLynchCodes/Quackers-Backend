@@ -31,7 +31,12 @@ sudo apt install certbot python3-certbot-nginx
 
 Obtain an SSL certificate:
 ```bash
-sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+sudo certbot --nginx -d quackers-beta@evaluates2.com -d www.quackers-beta@evaluates2.com
+```
+
+Test automatic renewal:
+```bash
+sudo certbot renew --dry-run
 ```
 
 Follow the prompts to complete the SSL certificate installation.
@@ -39,7 +44,35 @@ Follow the prompts to complete the SSL certificate installation.
 
 ## 4) Nginx Setup (ports and firewalls configuration)
 
-Follow commands in the `quackers_ws_ngix_config` and move the file to the location it describes.
+
+4a) Edit configuration:
+```bash
+sudo nano /etc/nginx/sites-available/your_domain
+```
+
+4b) Paste in contenst of: `quackers_ws_ngix_config`
+
+4c) Test new configuration: `sudo nginx -t`
+
+4d)
+
+```bash
+sudo apt install ufw
+```
+
+```bash
+sudo ufw allow OpenSSH
+```
+```bash
+sudo ufw allow 443/tcp 
+```
+
+```bash
+sudo ufw enable
+```
+
+4e) Reload Nginx: `sudo systemctl reload nginx`
+
 
 
 ## 5) SystemD Setup (Running and auto-restarting the app)
@@ -62,3 +95,7 @@ sudo systemctl enable /etc/systemd/system/quackers_ws_server_systemd.service
 ```bash
 sudo systemctl start /etc/systemd/system/quackers_ws_server_systemd.service
 ```
+
+## 6) Update Github Secrets
+Change the secrets `SERVER_SSH_KEY` and on Github for this repository to store the info about the server.
+

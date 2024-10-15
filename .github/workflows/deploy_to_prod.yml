@@ -1,0 +1,47 @@
+name: Deploy Rust Project Based on Tag
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Check if tag contains "beta"
+        id: check_tag
+        run: |
+          if [[ "${GITHUB_REF##*/}" == *"beta"* ]]; then
+            echo "Tag contains 'beta', skipping prod deployment."
+            exit 1
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable  # You can also use nightly or a specific version
+
+      - name: Navigate Into ws-server Directory
+        run: cd ws-server
+
+      - name: Ls
+        run: ls
+
+      - name: Install dependencies
+        run: cd ws-server && cargo build --release
+
+      - name: Run tests
+        run: cd ws-server && cargo test --release
+
+      - name: Run clippy
+        run: cd ws-server && cargo clippy --release
+
+
+      - name: Print hooray
+        run: echo "Deploying to prod!"

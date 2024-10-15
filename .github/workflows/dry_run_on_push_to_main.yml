@@ -1,4 +1,4 @@
-name: Deploy Rust Project Based on Tag
+name: Runs tests, clippy, and prod build on push to main (no deploy)
 
 on:
   push:

@@ -1,0 +1,64 @@
+name: Deploy Rust Project Based on Tag
+
+on:
+  push:
+    tags:
+      - '*beta*'
+
+env:
+  EXECUTABLE_FILE_NAME: "quackers-ws-server"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable  # You can also use nightly or a specific version
+
+      - name: Navigate Into ws-server Directory
+        run: cd ws-server
+
+      - name: Ls
+        run: ls
+
+      - name: Install dependencies
+        run: cd ws-server && cargo build --release
+
+      - name: Run tests
+        run: cd ws-server && cargo test --release
+
+      - name: Run clippy
+        run: cd ws-server && cargo clippy --release
+
+      - name: Copy Executable to on_deck folder 
+        run: scp -r ./ws-server/target/release/$EXECUTABLE_FILE_NAME root@${{ secrets.SERVER_IP_ADDRESS }}:/on_deck
+
+      - name: SSH into server, build Rust project, and restart systemd service
+        run: |
+          ssh root@${{ secrets.SERVER_IP_ADDRESS }} << 'EOF'
+
+            # Delete the previous rollback option executable in the "off_deck" folder
+            rm -f off_deck/$EXECUTABLE_FILE_NAME
+
+            # Move the currently running executable from "live" to "off_deck"
+            mv live/$EXECUTABLE_FILE_NAME of off_deck/
+
+            # Move new executable from "on_deck" to "live"
+            mv on_deck/$EXECUTABLE_FILE_NAME of live/
+
+            # Restart the running server with systemctl
+            sudo systemctl daemon-reload
+            sudo systemctl restart quackers_ws_server_systemd.service
+
+          EOF

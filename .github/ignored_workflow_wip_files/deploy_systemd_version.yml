@@ -3,7 +3,7 @@ name: Deploy Rust Project to DigitalOcean
 on:
   push:
     tags:
-      - '*'  # Trigger deployment on any new tag
+      - '*beta*'  # Trigger deployment on any new tag
 
 jobs:
   deploy:
