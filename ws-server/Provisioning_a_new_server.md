@@ -12,14 +12,29 @@ In order to use SSL you need to buy a domain from somewhere. I'll be using: _.co
 Go to domain settings and add an A Record:
 
  - Host: subdomain (e.g., if your subdomain is quackers-beta, enter quackers-beta).
- - Type: A
+ 
+ - Record Type: A
+ 
  - Value: <your_server_ip_address> (replace this with the public IP address of your DigitalOcean server).
+ 
  - TTL: You can leave it as default or set it to 300 seconds.
 
+Then save the record and give it a few min / hours to propagate.
 
 
 ## 3) SSL SetUp (Let's Encrypt Certbot ssl with domain)
 
+Install Certbot for Let's Encrypt on your Ubuntu server:
+```bash
+sudo apt install certbot python3-certbot-nginx
+```
+
+Obtain an SSL certificate:
+```bash
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+```
+
+Follow the prompts to complete the SSL certificate installation.
 
 
 ## 4) Nginx Setup (ports and firewalls configuration)
