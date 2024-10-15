@@ -24,9 +24,6 @@ jobs:
       - name: Install dependencies
         run: cargo build --release
 
-      - name: Determine environment
-        id: determine-env
-
       - name: Run tests
         run: cargo test --release
 
