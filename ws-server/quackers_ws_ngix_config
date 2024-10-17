@@ -20,7 +20,7 @@ server {
     ssl_session_timeout 10m;
     ssl_session_tickets off;
 
-    # Restrict requests to the specific domain
+    # use CORS Restrict requests to the specific itch.io domain
     if ($http_referer !~* "^https?://(www\.)?quackers-game\.itch\.io") {
         return 403;  # Deny access
     }
