@@ -9,12 +9,15 @@ use crate::quackers_game::types::game_state::LeaderboardData;
 use crate::quackers_game::types::leaderboard_update_msg::{
     self, LeaderboardUpdateData, LeaderboardUpdateMsg,
 };
+use crate::quackers_game::types::player_join_msg::{
+    DuckDirection, NewJoinerDataWithAllPlayers, OtherPlayerData,
+};
 use crate::{
     quackers_game::types::{
         defaults::AVAILABLE_DUCK_COLORS,
         game_state::{ClientConnection, ClientGameData},
         msg::{GenericIncomingRequest, OutgoingGameActionType},
-        player_join_msg::{JoinRequestData, NewJoinerData, OtherPlayerJoinedMsg, YouJoinedMsg},
+        player_join_msg::{JoinRequestData, OtherPlayerJoinedMsg, YouJoinedMsg},
     },
     ClientConnections, ClientsGameData, Cracker, Leaderboard,
 };
@@ -138,7 +141,7 @@ pub async fn recalculate_leaderboard_positions(
     // Sorts clients, mutating vetor in place
     // Sort the clients in descending order based on cracker_count
     // clients_game_data_vec.sort_by(|a, b| b.1.cracker_count.cmp(&a.1.cracker_count));
-    
+
     clients_game_data_vec.sort_by(|a, b| {
         let count_cmp = b.1.cracker_count.cmp(&a.1.cracker_count); // Compare cracker_count
         if count_cmp == Ordering::Equal {
@@ -148,7 +151,7 @@ pub async fn recalculate_leaderboard_positions(
             count_cmp // Otherwise, return the comparison result of cracker_count
         }
     });
-    
+
     // clients_game_data_vec
     //     .sort_by(|a: &(&String, &ClientGameData), b: &(&String, &ClientGameData)| b.1.cracker_count.cmp(&a.1.cracker_count));
 
@@ -253,6 +256,7 @@ async fn build_you_joined_msg(
         client_id: "error".to_string(),
         x_pos: 0.,
         y_pos: 0.,
+        direction_facing: DuckDirection::Right,
         radius: 0,
         friendly_name: "error".to_string(),
         color: "error".to_string(),
@@ -266,9 +270,30 @@ async fn build_you_joined_msg(
         &default
     });
 
+    // let all_other_players = [];
+
+    // let mut clients_game_data_gaurd = clients_game_data_arc_mutex.lock().await;
+    // let mut clients_game_data_vec: Vec<&mut ClientGameData> =
+    // gaurd.iter_mut().map(|(_str, &mut game_data)| {
+    //     game_data
+    // }).collect();
+
+    let clients_game_data_vec: Vec<OtherPlayerData> = gaurd
+        .iter()
+        .map(|(_str, game_data)| OtherPlayerData {
+            player_uuid: game_data.client_id.clone(),
+            player_friendly_name: game_data.friendly_name.clone(),
+            color: game_data.color.clone(),
+            x_position: game_data.x_pos,
+            y_position: game_data.y_pos,
+            direction_facing: game_data.direction_facing.clone(),
+        }) // game_data is already &mut ClientGameData
+        .filter(|other_player_data| other_player_data.player_uuid != sender_game_data.client_id)
+        .collect();
+
     let message_struct = YouJoinedMsg {
         action_type: OutgoingGameActionType::YouJoined,
-        data: NewJoinerData {
+        data: NewJoinerDataWithAllPlayers {
             player_uuid: sender_game_data.client_id.clone(),
             player_friendly_name: sender_game_data.friendly_name.clone(),
             color: sender_game_data.color.clone(),
@@ -278,6 +303,7 @@ async fn build_you_joined_msg(
             cracker_y: cracker_gaurd.y_pos,
             cracker_points: cracker_gaurd.points,
             player_points: sender_game_data.cracker_count,
+            all_other_players: clients_game_data_vec,
         },
     };
 
@@ -301,6 +327,7 @@ pub async fn build_leaderboard_update_msg(
         client_id: "error".to_string(),
         x_pos: 0.,
         y_pos: 0.,
+        direction_facing: DuckDirection::Right,
         radius: 0,
         friendly_name: "error".to_string(),
         color: "error".to_string(),
@@ -351,6 +378,7 @@ async fn build_other_player_joined_msg(
         client_id: "error".to_string(),
         x_pos: 0.,
         y_pos: 0.,
+        direction_facing: DuckDirection::Right,
         radius: 0,
         friendly_name: "error".to_string(),
         color: "error".to_string(),
@@ -369,16 +397,17 @@ async fn build_other_player_joined_msg(
 
     let message_struct = OtherPlayerJoinedMsg {
         action_type: OutgoingGameActionType::OtherPlayerJoined,
-        data: NewJoinerData {
+        data: OtherPlayerData {
             player_uuid: sender_game_data.client_id.to_string(),
             player_friendly_name: sender_game_data.friendly_name.clone(),
             color: sender_game_data.color.clone(),
             x_position: sender_game_data.x_pos,
             y_position: sender_game_data.y_pos,
-            cracker_x: cracker_gaurd.x_pos,
-            cracker_y: cracker_gaurd.y_pos,
-            cracker_points: cracker_gaurd.points,
-            player_points: sender_game_data.cracker_count,
+            direction_facing: sender_game_data.direction_facing.clone(),
+            // cracker_x: cracker_gaurd.x_pos,
+            // cracker_y: cracker_gaurd.y_pos,
+            // cracker_points: cracker_gaurd.points,
+            // player_points: sender_game_data.cracker_count,
         },
     };
 

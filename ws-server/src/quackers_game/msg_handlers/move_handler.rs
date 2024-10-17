@@ -11,6 +11,7 @@ use crate::{
             game_state::ClientGameData,
             got_crackers_msg::{GotCrackerResponseData, YouGotCrackerMsg},
             msg::{GenericIncomingRequest, OutgoingGameActionType},
+            player_join_msg::DuckDirection,
             player_move_msg::{MoveRequestData, MoveResponseData, OtherMovedMsg, YouMovedMsg},
         },
     },
@@ -98,7 +99,6 @@ pub async fn handle_move_action(
 
         // if found cracker, recalc leaderboard and send update message to everyone
         if let Some(_cracker) = &found_cracker {
-            
             println!("Found a cracker, recalculating leaderboard...");
 
             recalculate_leaderboard_positions(&clients_game_data_mutex, &leaderboard_mutex).await;
@@ -132,6 +132,7 @@ async fn check_if_player_touched_crackers(
         client_id: "error".to_string(),
         x_pos: 0.,
         y_pos: 0.,
+        direction_facing: DuckDirection::Right,
         radius: 0,
         friendly_name: "error".to_string(),
         color: "error".to_string(),
@@ -222,6 +223,13 @@ async fn try_to_move_player(
         }
         if client.y_pos < MIN_Y_POS {
             client.y_pos = MIN_Y_POS;
+        }
+
+        // set duck direction
+        if move_request_data.x_direction > 0. {
+            client.direction_facing = DuckDirection::Right
+        } else if move_request_data.x_direction < 0. {
+            client.direction_facing = DuckDirection::Left
         }
 
         let you_moved_msg_data = MoveResponseData {

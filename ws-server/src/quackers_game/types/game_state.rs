@@ -1,5 +1,8 @@
+use serde::Serialize;
 use tokio::sync::mpsc;
 use warp::filters::ws::Message;
+
+use super::player_join_msg::DuckDirection;
 
 #[derive(Debug, Clone)]
 pub struct ClientConnection {
@@ -7,11 +10,12 @@ pub struct ClientConnection {
     pub sender: Option<mpsc::UnboundedSender<std::result::Result<Message, warp::Error>>>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ClientGameData {
     pub client_id: String,
     pub x_pos: f32,
     pub y_pos: f32,
+    pub direction_facing: DuckDirection,
     pub radius: u64,
 
     pub friendly_name: String,

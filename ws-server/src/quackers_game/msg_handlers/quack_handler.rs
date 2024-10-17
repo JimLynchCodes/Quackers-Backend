@@ -2,9 +2,7 @@ use warp::filters::ws::Message;
 
 use crate::{
     quackers_game::types::{
-        game_state::ClientGameData,
-        msg::OutgoingGameActionType,
-        quack_msg::{OtherQuackedMsg, QuackResponseData, YouQuackedMsg},
+        game_state::ClientGameData, msg::OutgoingGameActionType, player_join_msg::DuckDirection, quack_msg::{OtherQuackedMsg, QuackResponseData, YouQuackedMsg}
     },
     ClientConnections, ClientsGameData,
 };
@@ -48,6 +46,7 @@ async fn build_you_quacked_msg(
         client_id: "error".to_string(),
         x_pos: 0.,
         y_pos: 0.,
+        direction_facing: DuckDirection::Right,
         radius: 0,
         friendly_name: "error".to_string(),
         color: "error".to_string(),
@@ -91,6 +90,7 @@ async fn build_other_player_quacked_msg(
         client_id: "error".to_string(),
         x_pos: 0.,
         y_pos: 0.,
+        direction_facing: DuckDirection::Right,
         radius: 0,
         friendly_name: "error".to_string(),
         color: "error".to_string(),

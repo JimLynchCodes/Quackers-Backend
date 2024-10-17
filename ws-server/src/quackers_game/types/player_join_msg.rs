@@ -1,4 +1,4 @@
-use super::msg::OutgoingGameActionType;
+use super::{game_state::ClientGameData, msg::OutgoingGameActionType};
 use serde::{Deserialize, Serialize};
 
 // Player sends a "friendly name" and then other players can see
@@ -9,8 +9,40 @@ pub struct JoinRequestData {
     pub friendly_name: String,
 }
 
+#[derive(Debug, Clone, Serialize)]
+pub enum DuckDirection {
+    Left,
+    Right,
+}
+
 #[derive(Debug, Serialize)]
-pub struct NewJoinerData {
+pub struct OtherPlayerData {
+    pub player_uuid: String,
+    pub player_friendly_name: String,
+    pub color: String,
+    pub x_position: f32,
+    pub y_position: f32,
+
+    pub direction_facing: DuckDirection,
+}
+
+// #[derive(Debug, Serialize)]
+// pub struct NewJoinerData {
+//     pub player_uuid: String,
+//     pub player_friendly_name: String,
+//     pub color: String,
+//     pub x_position: f32,
+//     pub y_position: f32,
+//     pub cracker_x: f32,
+//     pub cracker_y: f32,
+//     pub cracker_points: u64,
+//     pub direction_facing: DuckDirection,
+
+//     pub player_points: u64,
+// }
+
+#[derive(Debug, Serialize)]
+pub struct NewJoinerDataWithAllPlayers {
     pub player_uuid: String,
     pub player_friendly_name: String,
     pub color: String,
@@ -20,17 +52,19 @@ pub struct NewJoinerData {
     pub cracker_y: f32,
     pub cracker_points: u64,
 
-    pub player_points: u64
+    pub player_points: u64,
+
+    pub all_other_players: Vec<OtherPlayerData>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct YouJoinedMsg {
     pub action_type: OutgoingGameActionType,
-    pub data: NewJoinerData,
+    pub data: NewJoinerDataWithAllPlayers,
 }
 
 #[derive(Debug, Serialize)]
 pub struct OtherPlayerJoinedMsg {
     pub action_type: OutgoingGameActionType,
-    pub data: NewJoinerData,
+    pub data: OtherPlayerData,
 }

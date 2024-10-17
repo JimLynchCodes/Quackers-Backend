@@ -6,6 +6,7 @@ use crate::quackers_game::types::defaults::{
     PLAYER_RADIUS, PLAYER_X_DEFAULT_START_POSTION, PLAYER_Y_DEFAULT_START_POSTION,
 };
 use crate::quackers_game::types::game_state::{ClientConnection, ClientGameData};
+use crate::quackers_game::types::player_join_msg::DuckDirection;
 use crate::{ClientConnections, ClientsGameData, Cracker, Leaderboard};
 
 use futures::{FutureExt, StreamExt};
@@ -57,6 +58,7 @@ pub async fn client_connection(
         quack_pitch: 1.0,
         x_pos: PLAYER_X_DEFAULT_START_POSTION,
         y_pos: PLAYER_Y_DEFAULT_START_POSTION,
+        direction_facing: DuckDirection::Right,
         radius: PLAYER_RADIUS,
         cracker_count: 0,
         leaderboard_position: 0,
