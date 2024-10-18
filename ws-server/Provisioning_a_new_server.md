@@ -116,7 +116,7 @@ mkdir /root/live
 Then move executable there:
 
 ```bash
-scp -r ./target/release/quackers-ws-server root@xxx.xxx.xx.xxx:/root/live/
+scp -r ./target/x86_64-unknown-linux-gnu/release/quackers-ws-server root@xxx.xxx.xx.xxx:/root/live/
 ```
 
 </br>
@@ -125,9 +125,24 @@ scp -r ./target/release/quackers-ws-server root@xxx.xxx.xx.xxx:/root/live/
 
 4c) Test new configuration: `sudo nginx -t`
 
-4e) Reload Nginx: `sudo nginx -s reload`
+4e) Reload Nginx: `sudo nginx -s reload` or `sudo systemctl restart nginx`
+
+nginx logs:
+```bash
+sudo tail -f /var/log/nginx/error.log
+```
+
+or 
+```bash
+sudo tail -f /var/log/nginx/access.log
+```
 
 <br/>
+
+## ) check firewall ports
+```bash
+sudo ufw status verbose
+```
 
 ## 9) SSL SetUp (Let's Encrypt Certbot ssl with domain)
 
@@ -160,6 +175,11 @@ sudo systemctl enable /etc/systemd/system/quackers_ws_server_systemd.service
 sudo systemctl start /etc/systemd/system/quackers_ws_server_systemd.service
 ```
 
+- or restart
+```bash
+sudo systemctl restart quackers_ws_server_systemd.service
+```
+
 - see what's running:
 ```bash
 systemctl list-units --type=service
@@ -168,6 +188,11 @@ systemctl list-units --type=service
 - see run logs (useful if it can't start)
 ```bash
 sudo journalctl -u quackers_ws_server_systemd.service --no-pager
+```
+
+- reload
+```bash
+sudo systemctl daemon-reload
 ```
 
 ## 11) Update Github Secrets
