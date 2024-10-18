@@ -3,9 +3,9 @@ Description=Quackers WS Server Beta
 After=network.target
 
 [Service]
-ExecStart=/live/quackers-ws-server
+ExecStart=/root/live/quackers-ws-server
 Restart=on-failure
-User=user
+User=root
 Environment="QUACKERS_WS_ENVIRONMENT=beta"
 
 [Install]

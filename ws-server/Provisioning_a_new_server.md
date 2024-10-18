@@ -51,6 +51,17 @@ Enter this in the fields:
 
 Then save the record and give it a few min / hours to propagate.
 
+To check if it actually propagated using DNS Checker:
+Visit [DNS Checker](https://dnschecker.org/#A/www.quackers-beta.jimlynchcodes.com) and change it to your domain.
+
+Enter Your Domain: In the search box, type the domain you want to check (e.g., quackers-beta.jimlynchcodes.com).
+
+Select Record Type: Choose the type of DNS record you want to check (e.g., A, CNAME, MX, etc.) from the dropdown menu.
+
+Click Search: Hit the Search button.
+
+View Results: The tool will display results showing whether your domain resolves correctly from different locations around the world.
+
 <br/>
 
 ## 4)  Set ports & firewall stuff
@@ -114,7 +125,7 @@ scp -r ./target/release/quackers-ws-server root@xxx.xxx.xx.xxx:/root/live/
 
 4c) Test new configuration: `sudo nginx -t`
 
-4e) Reload Nginx: `sudo systemctl reload nginx`
+4e) Reload Nginx: `sudo nginx -s reload`
 
 <br/>
 
@@ -147,6 +158,16 @@ sudo systemctl enable /etc/systemd/system/quackers_ws_server_systemd.service
 - run start (to start service running right now)
 ```bash
 sudo systemctl start /etc/systemd/system/quackers_ws_server_systemd.service
+```
+
+- see what's running:
+```bash
+systemctl list-units --type=service
+```
+
+- see run logs (useful if it can't start)
+```bash
+sudo journalctl -u quackers_ws_server_systemd.service --no-pager
 ```
 
 ## 11) Update Github Secrets

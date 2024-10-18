@@ -35,7 +35,7 @@ server {
     add_header Referrer-Policy "no-referrer-when-downgrade";
     add_header Content-Security-Policy "default-src 'self'; script-src 'self'; object-src 'none';";
 
-    location / {
+    location /ws {
         proxy_pass http://localhost:8000;  # Adjust port based on your Rust app
         
         # WebSocket specific headers
