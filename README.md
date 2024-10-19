@@ -15,6 +15,21 @@ The server will run on 0.0.0.0:8000.
 
 To get the full game experience, you can also run the [front-end code](https://github.com/JimLynchCodes/Quackers-Frontend) for this (also a Rust project, made with Bevy).
 
+## Deploying
+
+Add secrets in github actions environment secrets:
+
+BACKEND_WS_ENDPOINT =
+
+SERVER_IP_ADDRESS = 
+
+
+then make a new git tag that includes the phrase "beta" and push it.
+eg:
+```bash
+git tag v0.0.1-beta
+git push --tags
+```
 
 ## Requests Accepted
 
