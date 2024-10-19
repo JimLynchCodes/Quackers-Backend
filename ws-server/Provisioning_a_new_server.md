@@ -111,6 +111,11 @@ Might need to point it at the new config file:
 sudo nginx -t -c /etc/nginx/sites-available/quackers-beta.jimlynchcodes.com
 ```
 
+try to connect:
+```bash
+wscat -c wss://quackers-beta.jimlynchcodes.com/ws
+```
+
 </br>
 
 ## 7) Move Compiled Executable

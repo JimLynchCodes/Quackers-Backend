@@ -3,8 +3,10 @@ use std::convert::TryFrom;
 use std::{collections::HashMap, hash::RandomState, sync::Mutex};
 
 use rand::thread_rng;
+use rand::Rng;
 use warp::filters::ws::Message;
 
+use crate::quackers_game::types::defaults::AVAILABLE_NAMES;
 use crate::quackers_game::types::game_state::LeaderboardData;
 use crate::quackers_game::types::leaderboard_update_msg::{
     self, LeaderboardUpdateData, LeaderboardUpdateMsg,
@@ -14,7 +16,7 @@ use crate::quackers_game::types::player_join_msg::{
 };
 use crate::{
     quackers_game::types::{
-        defaults::AVAILABLE_DUCK_COLORS,
+        defaults::AVAILABLE_DUCK_COLORS_WEIGHTED,
         game_state::{ClientConnection, ClientGameData},
         msg::{GenericIncomingRequest, OutgoingGameActionType},
         player_join_msg::{JoinRequestData, OtherPlayerJoinedMsg, YouJoinedMsg},
@@ -52,71 +54,24 @@ pub async fn handle_submit_name_action(
             sender_client_id, submit_action_request_data.friendly_name
         );
 
-        let available_names = vec![
-            "Jimbo".to_string(),
-            "Chip".to_string(),
-            "Francesca".to_string(),
-            "Lucy".to_string(),
-            "Jerome".to_string(),
-            "Phillonius".to_string(),
-            "Faran".to_string(),
-            "Cody".to_string(),
-            "Bob".to_string(),
-            "Ella".to_string(),
-            "Jessica".to_string(),
-            "Scooter".to_string(),
-            "Louie".to_string(),
-            "Cindy".to_string(),
-            "Mary Lou".to_string(),
-            "Raphael".to_string(),
-            "John".to_string(),
-            "Diana".to_string(),
-            "Ernie".to_string(),
-            "Jack".to_string(),
-            "Mike".to_string(),
-            "Roger".to_string(),
-            "Peter".to_string(),
-            "Jiddle".to_string(),
-            "Sergio".to_string(),
-            "Julio".to_string(),
-            "Anne".to_string(),
-            "Alfred".to_string(),
-            "Chuck".to_string(),
-            "Ethan".to_string(),
-            "Fred".to_string(),
-            "Gertrude".to_string(),
-            "Harold".to_string(),
-            "Henrietta".to_string(),
-            "Isabelle".to_string(),
-            "Kyle".to_string(),
-            "Lunky".to_string(),
-            "Marge".to_string(),
-            "Moops".to_string(),
-            "Mims".to_string(),
-            "Mom".to_string(),
-            "Nancy".to_string(),
-            "Quinne".to_string(),
-            "Steve".to_string(),
-            "Sally".to_string(),
-            "Tommy".to_string(),
-            "Ulyses".to_string(),
-            "Victoria".to_string(),
-            "Willy".to_string(),
-            "Xavier".to_string(),
-            "Zoomy".to_string(),
-        ];
-
         let mut rng = thread_rng();
 
-        let randomly_chosen_name = match available_names.choose(&mut rng) {
+        let randomly_chosen_name = match AVAILABLE_NAMES.choose(&mut rng) {
             Some(random_element) => random_element,
             _ => "Guest",
         };
 
-        let randomly_chosen_color = match AVAILABLE_DUCK_COLORS.choose(&mut rng) {
-            Some(random_element) => random_element,
-            _ => "white",
-        };
+        // unweighted
+        // let randomly_chosen_color = match AVAILABLE_DUCK_COLORS.choose(&mut rng) {
+        //     Some(random_element) => random_element,
+        //     _ => "white",
+        // };
+
+        // let available_duck_colors_weighted =
+        //     vec![("red", 1), ("blue", 2), ("green", 3), ("yellow", 4)];
+
+        let randomly_chosen_color = weighted_choose(&AVAILABLE_DUCK_COLORS_WEIGHTED);
+        println!("Randomly chosen color: {}", randomly_chosen_color);
 
         mutable_game_data_gaurd.friendly_name = randomly_chosen_name.to_string();
         mutable_game_data_gaurd.color = randomly_chosen_color.to_string();
@@ -170,6 +125,22 @@ pub async fn handle_submit_name_action(
             .send(Ok(leaderboard_update_msg))
             .unwrap();
     }
+}
+
+fn weighted_choose<T: Copy>(options: &[(T, u32)]) -> T {
+    let mut rng = thread_rng();
+    let total_weight: u32 = options.iter().map(|&(_, weight)| weight).sum();
+    let mut random_value = rng.gen_range(0..total_weight);
+
+    for &(item, weight) in options {
+        if random_value < weight {
+            return item; // Return the selected item
+        }
+        random_value -= weight; // Reduce the random_value by the current weight
+    }
+
+    // Fallback case, should never hit here if weights are set correctly
+    options[0].0 // Return first option if all else fails
 }
 
 pub async fn recalculate_leaderboard_positions(
