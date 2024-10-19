@@ -41,7 +41,7 @@ async fn main() {
         .and_then(handlers::ws_handler);
 
     let routes = ws_route.with(warp::cors().allow_any_origin());
-    println!("Starting server on ws://127.0.0.1:8000/ws");
+    println!("Starting server on ws://0.0.0.0:8000/ws");
     warp::serve(routes).run(([127, 0, 0, 1], 8000)).await;
 }
 

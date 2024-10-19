@@ -104,6 +104,13 @@ scp -r ./quackers_ws_server_systemd.service root@{{ secrets.SERVER_IP_ADDRESS }}
 scp -r ./quackers_ws_ngix_config root@xxx.xxx.xx.xxx:/etc/nginx/sites-available/quackers-beta.jimlynchcodes.com
 ```
 
+Might need to delete (or comment out) the `/etc/nginx/sites-available/default` file.
+
+Might need to point it at the new config file:
+```bash
+sudo nginx -t -c /etc/nginx/sites-available/quackers-beta.jimlynchcodes.com
+```
+
 </br>
 
 ## 7) Move Compiled Executable

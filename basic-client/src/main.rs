@@ -1,6 +1,6 @@
 use tungstenite::connect;
 
-const SERVER_URL: &str = "ws://127.0.0.1:8000";
+const SERVER_URL: &str = "ws://0.0.0.0:8000";
 
 fn main() {
     let (mut socket, _response) = connect(SERVER_URL).expect("Can't connect");

@@ -8,12 +8,31 @@ Backend server for the Quackers mmo game.
 
 Simply use the use the `cargo run` command to run the program. There is no additional configuration needed.
 
-The server will run on 127.0.0.1:8000.
+The server will run on 0.0.0.0:8000.
 
 
 ## Frontend
 
 To get the full game experience, run the [front-end code](https://github.com/JimLynchCodes/Quackers-Frontend) for this (also a Rust project, made with Bevy).
+
+
+## Compiling for Ubuntu
+The regular cargo build won't deploy to ubuntu linx so we'll use _cross_ to compile a build that will work.
+
+Install cross into cargo if you haven't already:
+```bash
+cargo install cross --git https://github.com/cross-rs/cross
+```
+
+Add target for the linux distro you will be deploying to:
+```bash
+rustup target add x86_64-unknown-linux-gnu
+```
+
+Compile for ubuntu
+```bash
+cross build --target x86_64-unknown-linux-gnu --release
+```
 
 
 ## Requests Accepted

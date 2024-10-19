@@ -8,7 +8,7 @@ Backend server for the Quackers mmo game.
 
 Simply use the use the `cargo run` command to run the program. There is no additional configuration needed.
 
-The server will run on 127.0.0.1:8000.
+The server will run on 0.0.0.0:8000.
 
 
 ## Frontend
