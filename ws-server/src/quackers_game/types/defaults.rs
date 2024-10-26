@@ -10,17 +10,6 @@ pub const MAX_Y_POS: f32 = 1000.;
 pub const DUCK_COLORS_LENGTH: usize = 8;
 pub const NAMES_LIST_LENGTH: usize = 51;
 
-// pub const AVAILABLE_DUCK_COLORS: [&str; DUCK_COLORS_LENGTH] = [
-//     "teal",
-//     "yellow",
-//     "purple",
-//     "pink",
-//     "light_orange",
-//     "baby_blue",
-//     "lime_green",
-//     "white"
-// ];
-
 pub const AVAILABLE_DUCK_COLORS_WEIGHTED: [(&str, u32); DUCK_COLORS_LENGTH] = [
     ("teal", 5),
     ("yellow", 0),
@@ -85,9 +74,6 @@ pub const AVAILABLE_NAMES: [&str; NAMES_LIST_LENGTH] = [
     "Xavier",
     "Zoomy",
 ];
-
-// let available_duck_colors_weighted =
-//             vec![("red", 1), ("blue", 2), ("green", 3), ("yellow", 4)];
 
 pub const _MIN_QUACK_MULTIPLIER: f32 = 0.33;
 pub const _MAX_QUACK_MULTIPLIER: f32 = 2.2;

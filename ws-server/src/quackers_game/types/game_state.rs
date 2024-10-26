@@ -23,7 +23,25 @@ pub struct ClientGameData {
     pub quack_pitch: f32,
 
     pub cracker_count: u64,
-    pub leaderboard_position: u64
+    pub leaderboard_position: u64,
+}
+
+impl ClientGameData {
+
+    pub fn error_instance() -> Self {
+        Self {
+            client_id: "error".to_string(),
+            x_pos: 0.,
+            y_pos: 0.,
+            direction_facing: DuckDirection::Right,
+            radius: 0,
+            friendly_name: "error".to_string(),
+            color: "error".to_string(),
+            quack_pitch: 0.,
+            cracker_count: 0,
+            leaderboard_position: 0,
+        }
+    }
 }
 
 pub struct CrackerData {
@@ -33,6 +51,7 @@ pub struct CrackerData {
     pub radius: u64,
 }
 
+#[derive(Default)]
 pub struct LeaderboardData {
     pub leaderboard_name_1st_place: String,
     pub leaderboard_name_2nd_place: String,
@@ -45,4 +64,21 @@ pub struct LeaderboardData {
     pub leaderboard_score_3rd_place: u64,
     pub leaderboard_score_4th_place: u64,
     pub leaderboard_score_5th_place: u64,
+}
+
+impl LeaderboardData {
+    pub fn new_leaderboard() -> Self {
+        LeaderboardData {
+            leaderboard_name_1st_place: "--".to_string(),
+            leaderboard_name_2nd_place: "--".to_string(),
+            leaderboard_name_3rd_place: "--".to_string(),
+            leaderboard_name_4th_place: "--".to_string(),
+            leaderboard_name_5th_place: "--".to_string(),
+            leaderboard_score_1st_place: 0,
+            leaderboard_score_2nd_place: 0,
+            leaderboard_score_3rd_place: 0,
+            leaderboard_score_4th_place: 0,
+            leaderboard_score_5th_place: 0,
+        }
+    }
 }

@@ -18,20 +18,10 @@ async fn main() {
     let clients: ClientConnections = Arc::new(Mutex::new(HashMap::new()));
     let clients_game_data: ClientsGameData = Arc::new(Mutex::new(HashMap::new()));
     let cracker: Cracker = Arc::new(Mutex::new(generate_random_cracker_data()));
-    let leaderboard: Leaderboard = Arc::new(Mutex::new(LeaderboardData {
-        leaderboard_name_1st_place: "--".to_string(),
-        leaderboard_name_2nd_place: "--".to_string(),
-        leaderboard_name_3rd_place: "--".to_string(),
-        leaderboard_name_4th_place: "--".to_string(),
-        leaderboard_name_5th_place: "--".to_string(),
-        leaderboard_score_1st_place: 0,
-        leaderboard_score_2nd_place: 0,
-        leaderboard_score_3rd_place: 0,
-        leaderboard_score_4th_place: 0,
-        leaderboard_score_5th_place: 0,
-    }));
+    let leaderboard: Leaderboard = Arc::new(Mutex::new(LeaderboardData::new_leaderboard()));
 
     println!("Configuring websocket route");
+
     let ws_route = warp::path("ws")
         .and(warp::ws())
         .and(with_client_connections(clients.clone()))
@@ -41,7 +31,7 @@ async fn main() {
         .and_then(handlers::ws_handler);
 
     let routes = ws_route.with(warp::cors().allow_any_origin());
-    println!("Starting server on ws://0.0.0.0:8000/ws");
+    println!("Starting server on ws://127.0.0.1:8000/ws");
     warp::serve(routes).run(([127, 0, 0, 1], 8000)).await;
 }
 

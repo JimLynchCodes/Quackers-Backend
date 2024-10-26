@@ -12,7 +12,7 @@ pub async fn handle_quack_action(
     client_connections_arc_mutex: &ClientConnections,
     clients_game_data_arc_mutex: &ClientsGameData,
 ) {
-    // No need to unpack the request data
+    // No need to unpack the request data for quack
 
     // Send quack message to connected clients
     for (_, tx) in client_connections_arc_mutex.lock().await.iter() {
@@ -86,24 +86,14 @@ async fn build_other_player_quacked_msg(
     quacker_client_id: &str,
     quacker_clients_game_data: &ClientsGameData,
 ) -> Message {
-    let default_game_data = ClientGameData {
-        client_id: "error".to_string(),
-        x_pos: 0.,
-        y_pos: 0.,
-        direction_facing: DuckDirection::Right,
-        radius: 0,
-        friendly_name: "error".to_string(),
-        color: "error".to_string(),
-        quack_pitch: 0.,
-        cracker_count: 0,
-        leaderboard_position: 0
-    };
 
     let gaurd = quacker_clients_game_data.lock().await;
 
+    let err_inst = ClientGameData::error_instance();
+
     let sender_game_data = gaurd.get(quacker_client_id).unwrap_or_else(|| {
         println!("Couldn't find client with id: {}", quacker_client_id);
-        &default_game_data
+        &err_inst
     });
 
     let quack_message_struct = OtherQuackedMsg {
