@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use super::msg::OutgoingGameActionType;
+use crate::quackers_game::types::msg::OutgoingGameActionType;
 
 #[derive(Debug, Serialize)]
 pub struct QuackRequestData {}

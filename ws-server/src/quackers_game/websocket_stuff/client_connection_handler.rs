@@ -1,12 +1,13 @@
-use crate::quackers_game::client_msg_handler::client_msg;
-use crate::quackers_game::msg_handlers::submit_name_handler::{
-    build_leaderboard_update_msg, recalculate_leaderboard_positions,
-};
+
+use crate::quackers_game::game::game_state::{ClientConnection, ClientGameData};
+use crate::quackers_game::msg_handlers::join::submit_name_handler::{build_leaderboard_update_msg, recalculate_leaderboard_positions};
 use crate::quackers_game::types::defaults::{
     PLAYER_RADIUS, PLAYER_X_DEFAULT_START_POSTION, PLAYER_Y_DEFAULT_START_POSTION,
 };
-use crate::quackers_game::types::game_state::{ClientConnection, ClientGameData};
+use crate::quackers_game::types::msg::OutgoingGameActionType;
 use crate::quackers_game::types::player_join_msg::DuckDirection;
+use crate::quackers_game::types::user_disconnected_msg::{UserDisconnectedData, UserDisconnectedMsg};
+use crate::quackers_game::websocket_stuff::client_msg_handler::client_msg;
 use crate::{ClientConnections, ClientsGameData, Cracker, Leaderboard};
 
 use futures::{FutureExt, StreamExt};
@@ -16,8 +17,6 @@ use uuid::Uuid;
 use warp::filters::ws::Message;
 use warp::ws::WebSocket;
 
-use super::types::msg::OutgoingGameActionType;
-use super::types::user_disconnected_msg::{UserDisconnectedData, UserDisconnectedMsg};
 
 pub async fn client_connection(
     ws: WebSocket,

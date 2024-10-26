@@ -1,8 +1,8 @@
 use std::str::FromStr;
 
-use crate::quackers_game::msg_handlers::move_handler::handle_move_action;
-use crate::quackers_game::msg_handlers::quack_handler::handle_quack_action;
-use crate::quackers_game::msg_handlers::submit_name_handler::handle_submit_name_action;
+use crate::quackers_game::msg_handlers::join::submit_name_handler::handle_submit_name_action;
+use crate::quackers_game::msg_handlers::player_move::move_handler::handle_move_action;
+use crate::quackers_game::msg_handlers::quack::quack_handler::handle_quack_action;
 use crate::quackers_game::types::msg::{GenericIncomingRequest, IncomingGameActionType};
 use crate::{ClientConnections, ClientsGameData, Cracker, Leaderboard};
 

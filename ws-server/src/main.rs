@@ -1,5 +1,5 @@
 use std::{collections::HashMap, convert::Infallible, sync::Arc};
-use quackers_game::{cracker_creator::generate_random_cracker_data, types::game_state::{ClientConnection, ClientGameData, CrackerData, LeaderboardData}};
+use quackers_game::game::{cracker_creator::generate_random_cracker_data, game_state::{ClientConnection, ClientGameData, CrackerData, LeaderboardData}};
 use tokio::sync::Mutex;
 use warp::{Filter, Rejection};
 

@@ -2,7 +2,7 @@ use serde::Serialize;
 use tokio::sync::mpsc;
 use warp::filters::ws::Message;
 
-use super::player_join_msg::DuckDirection;
+use crate::quackers_game::types::player_join_msg::DuckDirection;
 
 #[derive(Debug, Clone)]
 pub struct ClientConnection {

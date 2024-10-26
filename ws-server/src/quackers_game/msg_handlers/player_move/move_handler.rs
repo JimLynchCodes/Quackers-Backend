@@ -1,22 +1,17 @@
 use warp::filters::ws::Message;
 
 use crate::{
-    quackers_game::{
-        cracker_creator::generate_random_cracker_data,
-        msg_handlers::submit_name_handler::{
-            build_leaderboard_update_msg, recalculate_leaderboard_positions,
-        },
-        types::{
+    quackers_game::{game::{cracker_creator::generate_random_cracker_data, game_state::ClientGameData}, msg_handlers::{join::submit_name_handler::{build_leaderboard_update_msg, recalculate_leaderboard_positions}, player_move::player_move_types::MoveRequestData}, types::{
             defaults::{MAX_X_POS, MAX_Y_POS, MIN_X_POS, MIN_Y_POS},
-            game_state::ClientGameData,
             got_crackers_msg::{GotCrackerResponseData, YouGotCrackerMsg},
             msg::{GenericIncomingRequest, OutgoingGameActionType},
             player_join_msg::DuckDirection,
-            player_move_msg::{MoveRequestData, MoveResponseData, OtherMovedMsg, YouMovedMsg},
-        },
+        }
     },
     ClientConnections, ClientsGameData, Cracker, Leaderboard,
 };
+
+use super::player_move_types::{MoveResponseData, OtherMovedMsg, YouMovedMsg};
 
 pub async fn handle_move_action(
     sender_client_id: &str,
@@ -38,8 +33,7 @@ pub async fn handle_move_action(
             }
         });
 
-    // TODO - Add dangerous objects so players can die
-    // let did_player_die = check_if_player_died(clients_game_data_arc_mutex);
+    // TODO - Add dangerous objects so players can die?
 
     let found_cracker =
         check_if_player_touched_crackers(sender_client_id, clients_game_data_mutex, cracker_mutex)
@@ -55,11 +49,10 @@ pub async fn handle_move_action(
     // Send move message (and found cracker message, if cracker was found) to connected clients
     for (_, tx) in client_connections_mutex.lock().await.iter() {
         if &tx.client_id == sender_client_id {
-            // Client that send initial request message
+            // Send move msg back to client that send initial request message
 
             if let Some(moved_player_data) = &moved_player {
                 let you_moved_msg = build_you_moved_msg(moved_player_data).await;
-
                 tx.sender.as_ref().unwrap().send(Ok(you_moved_msg)).unwrap();
             }
 
@@ -74,7 +67,7 @@ pub async fn handle_move_action(
                     .unwrap();
             }
         } else {
-            // Other Players
+            // Send move message to other players
 
             if let Some(moved_player_data) = &moved_player {
                 let other_player_moved_msg = build_other_player_moved_msg(moved_player_data).await;
@@ -97,7 +90,7 @@ pub async fn handle_move_action(
             }
         }
 
-        // if found cracker, recalc leaderboard and send update message to everyone
+        // If moved into a cracker, recalc leaderboard and send update message to everyone
         if let Some(_cracker) = &found_cracker {
             println!("Found a cracker, recalculating leaderboard...");
 
