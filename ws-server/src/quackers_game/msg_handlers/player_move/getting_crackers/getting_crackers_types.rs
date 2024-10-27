@@ -1,8 +1,9 @@
 use serde::Serialize;
+use std::fmt::Display;
 
-use super::msg::OutgoingGameActionType;
+use crate::quackers_game::types::msg::OutgoingGameActionType;
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone, Default)]
 pub struct GotCrackerResponseData {
     pub player_uuid: String,
     pub player_friendly_name: String,
