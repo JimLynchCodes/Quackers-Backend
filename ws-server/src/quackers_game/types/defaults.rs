@@ -12,13 +12,13 @@ pub const NAMES_LIST_LENGTH: usize = 51;
 
 pub const AVAILABLE_DUCK_COLORS_WEIGHTED: [(&str, u32); DUCK_COLORS_LENGTH] = [
     ("teal", 5),
-    ("yellow", 0),
-    ("purple", 0),
-    ("pink", 0),
-    ("light_orange", 0),
-    ("baby_blue", 0),
-    ("lime_green", 0),
-    ("white", 0),
+    ("yellow", 5),
+    ("purple", 5),
+    ("pink", 3),
+    ("light_orange", 2),
+    ("baby_blue", 1),
+    ("lime_green", 5),
+    ("white", 1),
 ];
 
 pub const AVAILABLE_NAMES: [&str; NAMES_LIST_LENGTH] = [
