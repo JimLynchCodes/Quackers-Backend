@@ -1,4 +1,4 @@
-use super::msg::OutgoingGameActionType;
+use super::msg_types::OutgoingGameActionType;
 use serde::Serialize;
 
 // Player sends a "friendly name" and then other players can see

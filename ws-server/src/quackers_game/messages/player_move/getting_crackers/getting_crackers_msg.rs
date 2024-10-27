@@ -1,6 +1,6 @@
 use warp::filters::ws::Message;
 
-use crate::quackers_game::types::msg::OutgoingGameActionType;
+use crate::quackers_game::types::msg_types::OutgoingGameActionType;
 
 use super::getting_crackers_types::{GotCrackerResponseData, YouGotCrackerMsg};
 
@@ -28,10 +28,10 @@ mod tests {
     use warp::filters::ws::Message;
 
     use crate::quackers_game::{
-        msg_handlers::player_move::getting_crackers::getting_crackers_types::{
+        messages::player_move::getting_crackers::getting_crackers_types::{
             GotCrackerResponseData, OtherPlayerGotCrackersMsg,
         },
-        types::msg::OutgoingGameActionType,
+        types::msg_types::OutgoingGameActionType,
     };
 
     use super::build_other_player_got_cracker_msg;

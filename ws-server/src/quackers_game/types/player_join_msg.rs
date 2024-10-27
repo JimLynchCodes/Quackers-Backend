@@ -1,4 +1,4 @@
-use super::msg::OutgoingGameActionType;
+use super::msg_types::OutgoingGameActionType;
 use serde::{Deserialize, Serialize};
 
 // Player sends a "friendly name" and then other players can see
@@ -25,21 +25,6 @@ pub struct OtherPlayerData {
 
     pub direction_facing: DuckDirection,
 }
-
-// #[derive(Debug, Serialize)]
-// pub struct NewJoinerData {
-//     pub player_uuid: String,
-//     pub player_friendly_name: String,
-//     pub color: String,
-//     pub x_position: f32,
-//     pub y_position: f32,
-//     pub cracker_x: f32,
-//     pub cracker_y: f32,
-//     pub cracker_points: u64,
-//     pub direction_facing: DuckDirection,
-
-//     pub player_points: u64,
-// }
 
 #[derive(Debug, Serialize)]
 pub struct NewJoinerDataWithAllPlayers {

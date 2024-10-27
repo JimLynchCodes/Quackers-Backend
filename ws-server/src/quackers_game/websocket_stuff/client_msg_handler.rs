@@ -1,15 +1,14 @@
-use std::str::FromStr;
-
-use crate::quackers_game::msg_handlers::join::submit_name_handler::handle_submit_name_action;
-use crate::quackers_game::msg_handlers::player_move::move_handler::handle_move_action;
-use crate::quackers_game::msg_handlers::quack::quack_handler::handle_quack_action;
-use crate::quackers_game::types::msg::{GenericIncomingRequest, IncomingGameActionType};
+use crate::quackers_game::messages::join::receive_submit_name_request::receive_submit_name_action;
+use crate::quackers_game::messages::player_move::move_handler::handle_move_action;
+use crate::quackers_game::messages::quack::quack_handler::handle_quack_action;
+use crate::quackers_game::types::msg_types::{GenericIncomingRequest, IncomingGameActionType};
+use crate::quackers_game::websocket_stuff::msg_unpacking::get_action_type_from_message::get_action_type_from_message;
+use crate::quackers_game::websocket_stuff::msg_unpacking::unpack_generic_msg::unpack_generic_message;
 use crate::{ClientConnections, ClientsGameData, Cracker, Leaderboard};
 
-use serde_json::Value;
 use warp::ws::Message;
 
-pub async fn client_msg(
+pub async fn client_msg_handler(
     client_id: &str,
     msg: Message,
     client_connections_arc_mutex: &ClientConnections,
@@ -19,7 +18,7 @@ pub async fn client_msg(
 ) {
     println!("received message from {}: {:?}", client_id, msg);
 
-    let json_message: GenericIncomingRequest = unpack_message(msg);
+    let json_message: GenericIncomingRequest = unpack_generic_message(msg);
 
     let action_type = get_action_type_from_message(&json_message);
 
@@ -27,7 +26,7 @@ pub async fn client_msg(
 
     match action_type {
         IncomingGameActionType::Join => {
-            handle_submit_name_action(
+            receive_submit_name_action(
                 client_id,
                 json_message.clone(),
                 &client_connections_arc_mutex,
@@ -59,38 +58,4 @@ pub async fn client_msg(
         IncomingGameActionType::Interact => (),
         IncomingGameActionType::Empty => (),
     }
-}
-
-fn get_action_type_from_message(json_message: &GenericIncomingRequest) -> IncomingGameActionType {
-    IncomingGameActionType::from_str(&json_message.action_type).unwrap_or_else(|_err| {
-        println!(
-            "Did not recognize incoming request action type: {}",
-            &json_message.action_type
-        );
-        IncomingGameActionType::Empty
-    })
-}
-
-fn unpack_message(msg: Message) -> GenericIncomingRequest {
-    let message = msg.to_str().unwrap_or_else(|_err| {
-        println!("Failed to convert message to string.");
-        ""
-    });
-
-    println!("message string {:?}", message);
-
-    let json_message: GenericIncomingRequest =
-        serde_json::from_str(message).unwrap_or_else(|_err| {
-            println!("Failed to convert string message to json.");
-
-            let empty_incoming_request: GenericIncomingRequest = GenericIncomingRequest {
-                action_type: "e".to_string(),
-                data: Value::String("foo".to_string()),
-            };
-            empty_incoming_request
-        });
-
-    println!("json message: {:?}", json_message);
-
-    json_message
 }

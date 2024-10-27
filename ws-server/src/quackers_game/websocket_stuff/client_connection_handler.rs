@@ -1,24 +1,21 @@
-
+use crate::quackers_game::game::game_constants::{PLAYER_RADIUS, PLAYER_X_DEFAULT_START_POSTION, PLAYER_Y_DEFAULT_START_POSTION};
 use crate::quackers_game::game::game_state::{ClientConnection, ClientGameData};
-use crate::quackers_game::msg_handlers::join::submit_name_handler::{build_leaderboard_update_msg, recalculate_leaderboard_positions};
-use crate::quackers_game::types::defaults::{
-    PLAYER_RADIUS, PLAYER_X_DEFAULT_START_POSTION, PLAYER_Y_DEFAULT_START_POSTION,
+use crate::quackers_game::messages::join::receive_submit_name_request::{
+    build_leaderboard_update_msg, recalculate_leaderboard_positions,
 };
-use crate::quackers_game::types::msg::OutgoingGameActionType;
+
 use crate::quackers_game::types::player_join_msg::DuckDirection;
-use crate::quackers_game::types::user_disconnected_msg::{UserDisconnectedData, UserDisconnectedMsg};
-use crate::quackers_game::websocket_stuff::client_msg_handler::client_msg;
+use crate::quackers_game::websocket_stuff::client_msg_handler::client_msg_handler;
+use crate::quackers_game::websocket_stuff::disconnect::user_disconnected_msg::build_user_disconnected_msg;
 use crate::{ClientConnections, ClientsGameData, Cracker, Leaderboard};
 
 use futures::{FutureExt, StreamExt};
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 use uuid::Uuid;
-use warp::filters::ws::Message;
 use warp::ws::WebSocket;
 
-
-pub async fn client_connection(
+pub async fn client_connection_handler(
     ws: WebSocket,
     client_connections: ClientConnections,
     clients_game_data: ClientsGameData,
@@ -73,7 +70,7 @@ pub async fn client_connection(
         match client_ws_rcv.next().await {
             Some(Ok(msg)) => {
                 // Process the message
-                let _result = client_msg(
+                let _result = client_msg_handler(
                     &uuid,
                     msg,
                     &client_connections,
@@ -133,21 +130,4 @@ pub async fn client_connection(
             }
         }
     }
-}
-
-fn build_user_disconnected_msg(uuid: &str) -> Message {
-    let user_disconnected_message_struct = UserDisconnectedMsg {
-        action_type: OutgoingGameActionType::UserDisconnected,
-        data: UserDisconnectedData {
-            disconnected_player_uuid: uuid.to_string(),
-        },
-    };
-
-    let user_disconnected_msg_string =
-        serde_json::ser::to_string(&user_disconnected_message_struct).unwrap_or_else(|_op| {
-            println!("Couldn't convert UserDisconnected struct to string");
-            "".to_string()
-        });
-
-    Message::text(user_disconnected_msg_string)
 }

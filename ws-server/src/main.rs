@@ -1,10 +1,11 @@
+mod quackers_game;
+mod ws_handlers;
+
 use std::{collections::HashMap, convert::Infallible, sync::Arc};
 use quackers_game::game::{cracker_creator::generate_random_cracker_data, game_state::{ClientConnection, ClientGameData, CrackerData, LeaderboardData}};
 use tokio::sync::Mutex;
 use warp::{Filter, Rejection};
-
-mod handlers;
-mod quackers_game;
+use ws_handlers::ws_handler;
 
 type ClientConnections = Arc<Mutex<HashMap<String, ClientConnection>>>;
 type ClientsGameData = Arc<Mutex<HashMap<String, ClientGameData>>>;
@@ -28,7 +29,7 @@ async fn main() {
         .and(with_clients_game_data(clients_game_data.clone()))
         .and(with_cracker(cracker.clone()))
         .and(with_leaderboard(leaderboard.clone()))
-        .and_then(handlers::ws_handler);
+        .and_then(ws_handler);
 
     let routes = ws_route.with(warp::cors().allow_any_origin());
     println!("Starting server on ws://127.0.0.1:8000/ws");

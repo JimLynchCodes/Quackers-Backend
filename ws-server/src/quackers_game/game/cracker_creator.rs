@@ -1,8 +1,11 @@
+use super::{
+    game_constants::{
+        BASE_CRACKER_POINT_VALUE, CRACKER_RADIUS, MAX_X_POS, MAX_Y_POS, MIN_X_POS, MIN_Y_POS,
+        RANDOM_CRACKER_POINT_VALUE,
+    },
+    game_state::CrackerData,
+};
 use rand::Rng;
-
-use crate::quackers_game::types::defaults::{BASE_CRACKER_POINT_VALUE, CRACKER_RADIUS, MAX_X_POS, MAX_Y_POS, MIN_X_POS, MIN_Y_POS, RANDOM_CRACKER_POINT_VALUE};
-
-use super::game_state::CrackerData;
 
 pub fn generate_random_cracker_data() -> CrackerData {
     let mut rng = rand::thread_rng();

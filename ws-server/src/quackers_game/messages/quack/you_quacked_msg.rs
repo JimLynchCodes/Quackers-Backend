@@ -1,7 +1,7 @@
 use warp::filters::ws::Message;
 
 use crate::quackers_game::game::game_state::ClientGameData;
-use crate::quackers_game::types::msg::OutgoingGameActionType;
+use crate::quackers_game::types::msg_types::OutgoingGameActionType;
 use crate::quackers_game::types::player_join_msg::DuckDirection;
 use crate::ClientsGameData;
 

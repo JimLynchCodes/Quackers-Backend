@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use super::msg::OutgoingGameActionType;
+use crate::quackers_game::types::msg_types::OutgoingGameActionType;
 
 #[derive(Debug, Serialize, Clone)]
 pub struct UserDisconnectedData {

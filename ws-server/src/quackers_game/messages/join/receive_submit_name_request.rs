@@ -5,9 +5,11 @@ use rand::thread_rng;
 use rand::Rng;
 use warp::filters::ws::Message;
 
+use crate::quackers_game::game::game_constants::AVAILABLE_DUCK_COLORS_WEIGHTED;
+use crate::quackers_game::game::game_constants::AVAILABLE_NAMES;
 use crate::quackers_game::game::game_state::ClientGameData;
 use crate::quackers_game::game::game_state::LeaderboardData;
-use crate::quackers_game::types::defaults::AVAILABLE_NAMES;
+use crate::quackers_game::helper_functions::weighted_choose::weighted_choose;
 use crate::quackers_game::types::leaderboard_update_msg::{
     LeaderboardUpdateData, LeaderboardUpdateMsg,
 };
@@ -16,8 +18,7 @@ use crate::quackers_game::types::player_join_msg::{
 };
 use crate::{
     quackers_game::types::{
-        defaults::AVAILABLE_DUCK_COLORS_WEIGHTED,
-        msg::{GenericIncomingRequest, OutgoingGameActionType},
+        msg_types::{GenericIncomingRequest, OutgoingGameActionType},
         player_join_msg::{JoinRequestData, OtherPlayerJoinedMsg, YouJoinedMsg},
     },
     ClientConnections, ClientsGameData, Cracker, Leaderboard,
@@ -25,7 +26,7 @@ use crate::{
 
 use rand::prelude::SliceRandom;
 
-pub async fn handle_submit_name_action(
+pub async fn receive_submit_name_action(
     sender_client_id: &str,
     json_message: GenericIncomingRequest,
     client_connections_arc_mutex: &ClientConnections,
@@ -114,22 +115,6 @@ pub async fn handle_submit_name_action(
             .send(Ok(leaderboard_update_msg))
             .unwrap();
     }
-}
-
-pub fn weighted_choose<T: Copy>(options: &[(T, u32)]) -> T {
-    let mut rng = thread_rng();
-    let total_weight: u32 = options.iter().map(|&(_, weight)| weight).sum();
-    let mut random_value = rng.gen_range(0..total_weight);
-
-    for &(item, weight) in options {
-        if random_value < weight {
-            return item; // Return the selected item
-        }
-        random_value -= weight; // Reduce the random_value by the current weight
-    }
-
-    // Fallback case, should never hit here if weights are set correctly
-    options[0].0 // Return first option if all else fails
 }
 
 pub async fn recalculate_leaderboard_positions(

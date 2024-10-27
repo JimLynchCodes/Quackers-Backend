@@ -1,6 +1,6 @@
 use warp::filters::ws::Message;
 
-use crate::{quackers_game::{game::game_state::ClientGameData, types::msg::OutgoingGameActionType}, ClientsGameData};
+use crate::{quackers_game::{game::game_state::ClientGameData, types::msg_types::OutgoingGameActionType}, ClientsGameData};
 
 use super::quack_types::{OtherQuackedMsg, QuackResponseData};
 
