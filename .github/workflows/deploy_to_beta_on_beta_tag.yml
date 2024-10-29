@@ -50,7 +50,7 @@ jobs:
 
       - name: SSH into server, build Rust project, and restart systemd service
         run: |
-          ssh root@${{ secrets.SERVER_IP_ADDRESS }} << 'EOF'
+          ssh -t root@${{ secrets.SERVER_IP_ADDRESS }} << 'EOF'
 
             # Delete the previous rollback option executable in the "off_deck" folder
             rm -f off_deck/$EXECUTABLE_FILE_NAME
