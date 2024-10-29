@@ -2,7 +2,6 @@ use std::cmp::Ordering;
 use std::convert::TryFrom;
 
 use rand::thread_rng;
-use rand::Rng;
 use warp::filters::ws::Message;
 
 use crate::quackers_game::game::game_constants::AVAILABLE_DUCK_COLORS_WEIGHTED;
