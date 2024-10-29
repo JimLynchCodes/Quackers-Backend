@@ -52,14 +52,14 @@ jobs:
         run: |
           ssh -n -o BatchMode=yes root@${{ secrets.SERVER_IP_ADDRESS }} << 'EOF'
 
-            # Delete the previous rollback option executable in the "off_deck" folder
-            rm -f off_deck/$EXECUTABLE_FILE_NAME
+            # Delete the previous rollback option executable in the "off_deck" folder (if it exists)
+            [ -f "off_deck/$EXECUTABLE_FILE_NAME" ] && rm -f off_deck/$EXECUTABLE_FILE_NAME
 
-            # Move the currently running executable from "live" to "off_deck"
-            mv live/$EXECUTABLE_FILE_NAME of off_deck/
+            # Move the currently running executable from "live" to "off_deck" (if it exists)
+            [ -f "live/$EXECUTABLE_FILE_NAME" ] && mv live/$EXECUTABLE_FILE_NAME off_deck/
 
             # Move new executable from "on_deck" to "live"
-            mv on_deck/$EXECUTABLE_FILE_NAME of live/
+            mv on_deck/$EXECUTABLE_FILE_NAME live/
 
             # Restart the running server with systemctl
             sudo systemctl daemon-reload
