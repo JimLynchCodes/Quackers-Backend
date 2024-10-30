@@ -191,9 +191,17 @@ async fn try_to_move_player(
         let old_client_x_pos = client.x_pos.clone();
         let old_client_y_pos = client.y_pos.clone();
 
-        // move player
-        client.x_pos += move_request_data.x_direction;
-        client.y_pos += move_request_data.y_direction;
+        let mut normalized_x = move_request_data.x_direction;
+        if normalized_x > 1. { normalized_x = 1. };
+        if normalized_x < -1. { normalized_x = -1. };
+
+        let mut normalized_y = move_request_data.y_direction;
+        if normalized_y > 1. { normalized_y = 1. };
+        if normalized_y < -1. { normalized_y = -1. };
+
+        // move player, normalizing to 1
+        client.x_pos += normalized_x;
+        client.y_pos += normalized_y;
 
         // keep within bounds, though
         if client.x_pos > MAX_X_POS {

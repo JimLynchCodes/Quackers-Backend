@@ -49,7 +49,7 @@ jobs:
         run: scp -r ./ws-server/target/release/$EXECUTABLE_FILE_NAME root@${{ secrets.SERVER_IP_ADDRESS }}:/root/on_deck/
 
       - name: Run deploy bash file
-        run: ssh -o BatchMode=yes root@${{ secrets.SERVER_IP_ADDRESS }} '/root/deploy.sh'
+        run: ssh -o BatchMode=yes root@${{ secrets.SERVER_IP_ADDRESS }} '/root/quackers_deploy.sh'
 
-      - name: folder test
-        run: ssh -n -o BatchMode=yes root@${{ secrets.SERVER_IP_ADDRESS }} 'touch /root/barf'
+      - name: Print finished
+        run: echo "Deployed!"
