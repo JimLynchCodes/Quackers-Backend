@@ -46,7 +46,10 @@ jobs:
           ssh-keyscan -H ${{ secrets.SERVER_IP_ADDRESS }} >> ~/.ssh/known_hosts
 
       - name: Copy Executable to on_deck folder 
-        run: scp -r ./ws-server/target/release/$EXECUTABLE_FILE_NAME root@${{ secrets.SERVER_IP_ADDRESS }}:/root/on_deck
+        run: scp -r ./ws-server/target/release/$EXECUTABLE_FILE_NAME root@${{ secrets.SERVER_IP_ADDRESS }}:/root/on_deck/
+
+      - name: Run deploy bash file
+        run: ssh -o BatchMode=yes root@your_server_ip '/root/deploy.sh'
 
       - name: folder test
         run: |
@@ -56,20 +59,20 @@ jobs:
             INNER_EOF
           EOF
 
-      - name: SSH into server, build Rust project, and restart systemd service
-        run: |
-          ssh -n -o BatchMode=yes root@outer_host << 'EOF'
-            ssh -n -o BatchMode=yes root@inner_host << 'INNER_EOF'
-              EXECUTABLE_FILE_NAME=quackers-ws-server
-              [ -f "root/off_deck/\$EXECUTABLE_FILE_NAME" ] && rm -f root/off_deck/\$EXECUTABLE_FILE_NAME
-              [ -f "root/live/\$EXECUTABLE_FILE_NAME" ] && mv root/live/\$EXECUTABLE_FILE_NAME root/off_deck/
-              mv root/on_deck/\$EXECUTABLE_FILE_NAME root/live/
-              sudo systemctl daemon-reload
-              sudo systemctl restart quackers_ws_server_systemd.service
-            INNER_EOF
-          EOF
+      # - name: SSH into server, build Rust project, and restart systemd service
+      #   run: |
+      #     ssh -n -o BatchMode=yes root@outer_host << 'EOF'
+      #       ssh -n -o BatchMode=yes root@inner_host << 'INNER_EOF'
+      #         EXECUTABLE_FILE_NAME=quackers-ws-server
+      #         [ -f "root/off_deck/\$EXECUTABLE_FILE_NAME" ] && rm -f root/off_deck/\$EXECUTABLE_FILE_NAME
+      #         [ -f "root/live/\$EXECUTABLE_FILE_NAME" ] && mv root/live/\$EXECUTABLE_FILE_NAME root/off_deck/
+      #         mv root/on_deck/\$EXECUTABLE_FILE_NAME root/live/
+      #         sudo systemctl daemon-reload
+      #         sudo systemctl restart quackers_ws_server_systemd.service
+      #       INNER_EOF
+      #     EOF
 
-          
+
       # - name: SSH into server, build Rust project, and restart systemd service
       #   run: |
       #     ssh -n -o BatchMode=yes root@${{ secrets.SERVER_IP_ADDRESS }} << 'EOF'
