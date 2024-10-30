@@ -223,9 +223,6 @@ async fn try_to_move_player(
         let old_client_x_pos = client.x_pos.clone();
         let old_client_y_pos = client.y_pos.clone();
 
-        let mut normalized_x = move_request_data.x_direction;
-        let mut normalized_y = move_request_data.y_direction;
-
         // normalize to 10
         let mut normalized_x = move_request_data.x_direction;
         if normalized_x > 10. {
