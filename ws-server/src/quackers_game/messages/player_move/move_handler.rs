@@ -1,8 +1,33 @@
 use warp::filters::ws::Message;
 
-use crate::{quackers_game::{game::{cracker_creator::generate_random_cracker_data, game_constants::{MAX_X_POS, MAX_Y_POS, MIN_X_POS, MIN_Y_POS}, game_state::ClientGameData}, messages::{join::receive_submit_name_request::{build_leaderboard_update_msg, recalculate_leaderboard_positions}, player_move::{getting_crackers::getting_crackers_msg::build_other_player_got_cracker_msg, player_move_types::MoveRequestData}}, types::{msg_types::{GenericIncomingRequest, OutgoingGameActionType}, player_join_msg::DuckDirection}}, ClientConnections, ClientsGameData, Cracker, Leaderboard};
+use crate::{
+    quackers_game::{
+        game::{
+            cracker_creator::generate_random_cracker_data,
+            game_constants::{MAX_X_POS, MAX_Y_POS, MIN_X_POS, MIN_Y_POS},
+            game_state::ClientGameData,
+        },
+        messages::{
+            join::receive_submit_name_request::{
+                build_leaderboard_update_msg, recalculate_leaderboard_positions,
+            },
+            player_move::{
+                getting_crackers::getting_crackers_msg::build_other_player_got_cracker_msg,
+                player_move_types::MoveRequestData,
+            },
+        },
+        types::{
+            msg_types::{GenericIncomingRequest, OutgoingGameActionType},
+            player_join_msg::DuckDirection,
+        },
+    },
+    ClientConnections, ClientsGameData, Cracker, Leaderboard,
+};
 
-use super::{getting_crackers::getting_crackers_types::{GotCrackerResponseData, YouGotCrackerMsg}, player_move_types::{MoveResponseData, OtherMovedMsg, YouMovedMsg}};
+use super::{
+    getting_crackers::getting_crackers_types::{GotCrackerResponseData, YouGotCrackerMsg},
+    player_move_types::{MoveResponseData, OtherMovedMsg, YouMovedMsg},
+};
 
 pub async fn handle_move_action(
     sender_client_id: &str,
@@ -25,17 +50,17 @@ pub async fn handle_move_action(
         });
 
     // TODO - Add dangerous objects so players can die?
-    
+
+    let found_cracker =
+        check_if_player_touched_crackers(sender_client_id, clients_game_data_mutex, cracker_mutex)
+            .await;
+
     let moved_player = try_to_move_player(
         sender_client_id,
         clients_game_data_mutex,
         &move_request_data,
     )
     .await;
-
-    let found_cracker =
-        check_if_player_touched_crackers(sender_client_id, clients_game_data_mutex, cracker_mutex)
-            .await;
 
     // Send move message (and found cracker message, if cracker was found) to connected clients
     for (_, tx) in client_connections_mutex.lock().await.iter() {
@@ -140,6 +165,13 @@ async fn check_if_player_touched_crackers(
 
     let combined_radii = client.radius + cracker_lock.radius;
 
+    println!("Client x: {} y: {}", &client.x_pos, &client.y_pos);
+
+    println!(
+        "Crackers x: {} y: {}",
+        &cracker_lock.x_pos, &cracker_lock.y_pos
+    );
+
     println!(
         "Comparing distance from cracker: {} to combined radii: {}",
         distance, combined_radii
@@ -190,6 +222,28 @@ async fn try_to_move_player(
     if let Some(client) = client_game_datagaurd.get_mut(client_id) {
         let old_client_x_pos = client.x_pos.clone();
         let old_client_y_pos = client.y_pos.clone();
+
+        let mut normalized_x = move_request_data.x_direction;
+        let mut normalized_y = move_request_data.y_direction;
+
+        // normalize to 10
+        let mut normalized_x = move_request_data.x_direction;
+        if normalized_x > 10. {
+            normalized_x = 10.
+        };
+        if normalized_x < -10. {
+            normalized_x = -10.
+        };
+        let mut normalized_y = move_request_data.y_direction;
+        if normalized_y > 10. {
+            normalized_y = 10.
+        };
+        if normalized_y < -10. {
+            normalized_y = -10.
+        };
+
+        client.x_pos += normalized_x;
+        client.y_pos += normalized_y;
 
         // keep within bounds, though
         if client.x_pos > MAX_X_POS {
