@@ -25,17 +25,17 @@ pub async fn handle_move_action(
         });
 
     // TODO - Add dangerous objects so players can die?
-
-    let found_cracker =
-        check_if_player_touched_crackers(sender_client_id, clients_game_data_mutex, cracker_mutex)
-            .await;
-
+    
     let moved_player = try_to_move_player(
         sender_client_id,
         clients_game_data_mutex,
         &move_request_data,
     )
     .await;
+
+    let found_cracker =
+        check_if_player_touched_crackers(sender_client_id, clients_game_data_mutex, cracker_mutex)
+            .await;
 
     // Send move message (and found cracker message, if cracker was found) to connected clients
     for (_, tx) in client_connections_mutex.lock().await.iter() {
@@ -190,18 +190,6 @@ async fn try_to_move_player(
     if let Some(client) = client_game_datagaurd.get_mut(client_id) {
         let old_client_x_pos = client.x_pos.clone();
         let old_client_y_pos = client.y_pos.clone();
-
-        let mut normalized_x = move_request_data.x_direction;
-        if normalized_x > 1. { normalized_x = 1. };
-        if normalized_x < -1. { normalized_x = -1. };
-
-        let mut normalized_y = move_request_data.y_direction;
-        if normalized_y > 1. { normalized_y = 1. };
-        if normalized_y < -1. { normalized_y = -1. };
-
-        // move player, normalizing to 1
-        client.x_pos += normalized_x;
-        client.y_pos += normalized_y;
 
         // keep within bounds, though
         if client.x_pos > MAX_X_POS {
