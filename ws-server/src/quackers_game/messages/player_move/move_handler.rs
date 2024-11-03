@@ -110,6 +110,7 @@ pub async fn handle_move_action(
         if let Some(_cracker) = &found_cracker {
             println!("Found a cracker, recalculating leaderboard...");
 
+            // TODO - Don't recalc on every iteration of loop?
             recalculate_leaderboard_positions(&clients_game_data_mutex, &leaderboard_mutex).await;
 
             let leaderboard_update_msg = build_leaderboard_update_msg(
@@ -128,6 +129,7 @@ pub async fn handle_move_action(
     }
 }
 
+// TODO -test this
 async fn check_if_player_touched_crackers(
     client_id: &str,
     clients_game_data_arc_mutex: &ClientsGameData,
@@ -211,6 +213,7 @@ async fn check_if_player_touched_crackers(
     None
 }
 
+// TODO - rename this better
 async fn try_to_move_player(
     client_id: &str,
     clients_game_data_arc_mutex: &ClientsGameData,
@@ -278,6 +281,8 @@ async fn try_to_move_player(
 
     None
 }
+
+// TODO -break out these functions to their own files
 
 async fn build_you_moved_msg(you_moved_response_data: &MoveResponseData) -> Message {
     let you_moved_message_struct = YouMovedMsg {

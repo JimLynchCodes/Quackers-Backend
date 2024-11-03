@@ -60,7 +60,8 @@ pub async fn receive_submit_name_action(
             _ => "Guest",
         };
 
-        let randomly_chosen_color = weighted_choose(&AVAILABLE_DUCK_COLORS_WEIGHTED);
+        let mut rng = thread_rng();
+        let randomly_chosen_color = weighted_choose(&AVAILABLE_DUCK_COLORS_WEIGHTED, &mut rng);
         println!("Randomly chosen color: {}", randomly_chosen_color);
 
         mutable_game_data_gaurd.friendly_name = randomly_chosen_name.to_string();
