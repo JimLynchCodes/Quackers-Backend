@@ -2,12 +2,16 @@ use serde::Serialize;
 use tokio::sync::mpsc;
 use warp::filters::ws::Message;
 
-use crate::quackers_game::types::player_join_msg::DuckDirection;
-
 #[derive(Debug, Clone)]
 pub struct ClientConnection {
     pub client_id: String,
     pub sender: Option<mpsc::UnboundedSender<std::result::Result<Message, warp::Error>>>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub enum DuckDirection {
+    Left,
+    Right,
 }
 
 #[derive(Debug, Clone, Serialize)]

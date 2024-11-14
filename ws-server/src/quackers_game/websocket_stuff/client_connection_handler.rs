@@ -1,10 +1,9 @@
 use crate::quackers_game::game::game_constants::{PLAYER_RADIUS, PLAYER_X_DEFAULT_START_POSTION, PLAYER_Y_DEFAULT_START_POSTION};
-use crate::quackers_game::game::game_state::{ClientConnection, ClientGameData};
+use crate::quackers_game::game::game_state::{ClientConnection, ClientGameData, DuckDirection};
 use crate::quackers_game::messages::join::receive_submit_name_request::{
     build_leaderboard_update_msg, recalculate_leaderboard_positions,
 };
 
-use crate::quackers_game::types::player_join_msg::DuckDirection;
 use crate::quackers_game::websocket_stuff::client_msg_handler::client_msg_handler;
 use crate::quackers_game::websocket_stuff::disconnect::user_disconnected_msg::build_user_disconnected_msg;
 use crate::{ClientConnections, ClientsGameData, Cracker, Leaderboard};

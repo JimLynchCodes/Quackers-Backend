@@ -1,8 +1,9 @@
 use warp::filters::ws::Message;
 
-use crate::quackers_game::game::game_state::ClientGameData;
-use crate::quackers_game::types::msg_types::OutgoingGameActionType;
-use crate::quackers_game::types::player_join_msg::DuckDirection;
+use crate::quackers_game::game::game_state::DuckDirection;
+use crate::quackers_game::{game::game_state::ClientGameData };
+use crate::quackers_game::messages::msg_types::OutgoingGameActionType;
+
 use crate::ClientsGameData;
 
 use super::quack_types::{QuackResponseData, YouQuackedMsg};

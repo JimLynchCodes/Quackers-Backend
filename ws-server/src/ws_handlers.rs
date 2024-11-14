@@ -10,8 +10,6 @@ pub async fn ws_handler(
     cracker: Cracker,
     leaderboard: Leaderboard,
 ) -> Result<impl Reply> {
-    println!("ws_handler");
-
     Ok(ws.on_upgrade(move |socket| {
         client_connection_handler(socket, client_connections, clients_game_data, cracker, leaderboard)
     }))

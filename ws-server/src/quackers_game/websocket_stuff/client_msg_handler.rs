@@ -1,7 +1,7 @@
 use crate::quackers_game::messages::join::receive_submit_name_request::receive_submit_name_action;
 use crate::quackers_game::messages::player_move::move_handler::handle_move_action;
 use crate::quackers_game::messages::quack::quack_handler::handle_quack_action;
-use crate::quackers_game::types::msg_types::{GenericIncomingRequest, IncomingGameActionType};
+use crate::quackers_game::messages::msg_types::{GenericIncomingRequest, IncomingGameActionType};
 use crate::quackers_game::websocket_stuff::msg_unpacking::get_action_type_from_message::get_action_type_from_message;
 use crate::quackers_game::websocket_stuff::msg_unpacking::unpack_generic_msg::unpack_generic_message;
 use crate::{ClientConnections, ClientsGameData, Cracker, Leaderboard};

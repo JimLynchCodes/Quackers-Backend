@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::quackers_game::types::msg_types::OutgoingGameActionType;
+use crate::quackers_game::messages::msg_types::OutgoingGameActionType;
 
 #[derive(Debug, Serialize, Clone, Default)]
 pub struct GotCrackerResponseData {

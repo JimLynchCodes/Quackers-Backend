@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::quackers_game::types::msg_types::{GenericIncomingRequest, IncomingGameActionType};
+use crate::quackers_game::messages::msg_types::{GenericIncomingRequest, IncomingGameActionType};
 
 pub fn get_action_type_from_message(
     json_message: &GenericIncomingRequest,

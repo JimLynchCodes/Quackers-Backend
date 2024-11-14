@@ -7,23 +7,27 @@ use warp::filters::ws::Message;
 use crate::quackers_game::game::game_constants::AVAILABLE_DUCK_COLORS_WEIGHTED;
 use crate::quackers_game::game::game_constants::AVAILABLE_NAMES;
 use crate::quackers_game::game::game_state::ClientGameData;
+use crate::quackers_game::game::game_state::DuckDirection;
 use crate::quackers_game::game::game_state::LeaderboardData;
 use crate::quackers_game::helper_functions::weighted_choose::weighted_choose;
-use crate::quackers_game::types::leaderboard_update_msg::{
+use crate::quackers_game::messages::leaderboard_update::leaderboard_update_types::{
     LeaderboardUpdateData, LeaderboardUpdateMsg,
 };
-use crate::quackers_game::types::player_join_msg::{
-    DuckDirection, NewJoinerDataWithAllPlayers, OtherPlayerData,
+use crate::quackers_game::messages::msg_types::GenericIncomingRequest;
+use crate::quackers_game::messages::msg_types::OutgoingGameActionType;
+use crate::quackers_game::messages::join::player_join_types::{
+    NewJoinerDataWithAllPlayers, OtherPlayerData,
 };
 use crate::{
-    quackers_game::types::{
-        msg_types::{GenericIncomingRequest, OutgoingGameActionType},
-        player_join_msg::{JoinRequestData, OtherPlayerJoinedMsg, YouJoinedMsg},
-    },
+
     ClientConnections, ClientsGameData, Cracker, Leaderboard,
 };
 
 use rand::prelude::SliceRandom;
+
+use super::player_join_types::JoinRequestData;
+use super::player_join_types::OtherPlayerJoinedMsg;
+use super::player_join_types::YouJoinedMsg;
 
 pub async fn receive_submit_name_action(
     sender_client_id: &str,

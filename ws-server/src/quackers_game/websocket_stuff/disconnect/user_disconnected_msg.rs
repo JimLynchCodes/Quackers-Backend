@@ -1,6 +1,6 @@
 use warp::filters::ws::Message;
 
-use crate::quackers_game::types::msg_types::OutgoingGameActionType;
+use crate::quackers_game::messages::msg_types::OutgoingGameActionType;
 
 use super::user_disconnected_types::{UserDisconnectedData, UserDisconnectedMsg};
 

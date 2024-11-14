@@ -1,5 +1,6 @@
-use super::msg_types::OutgoingGameActionType;
 use serde::Serialize;
+
+use crate::quackers_game::messages::msg_types::OutgoingGameActionType;
 
 // Player sends a "friendly name" and then other players can see
 // Note: currently name is generated randomly by server and this friendly_name is ignored

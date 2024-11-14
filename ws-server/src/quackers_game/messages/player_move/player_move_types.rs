@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::quackers_game::types::msg_types::OutgoingGameActionType;
+use crate::quackers_game::messages::msg_types::OutgoingGameActionType;
 
 #[derive(Debug, Deserialize)]
 pub struct MoveRequestData {

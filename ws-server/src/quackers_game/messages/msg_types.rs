@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use strum_macros::EnumString;
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, Default, PartialEq)]
 pub struct GenericIncomingRequest {
     pub action_type: String,
     pub data: Value,

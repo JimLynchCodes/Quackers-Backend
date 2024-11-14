@@ -1,5 +1,7 @@
-use super::msg_types::OutgoingGameActionType;
+
 use serde::{Deserialize, Serialize};
+
+use crate::quackers_game::{game::game_state::DuckDirection, messages::msg_types::OutgoingGameActionType};
 
 // Player sends a "friendly name" and then other players can see
 // Note: currently name is generated randomly by server and this friendly_name is ignored
@@ -7,12 +9,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize)]
 pub struct JoinRequestData {
     pub friendly_name: String,
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub enum DuckDirection {
-    Left,
-    Right,
 }
 
 #[derive(Debug, Serialize)]
